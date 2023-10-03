@@ -3,7 +3,7 @@ const jsdom = require("jsdom")
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
 
-const BASE_URL = process.env.BASE_URL || "https://ikuuu.art/";
+const BASE_URL = "https://ikuuu.art/";
 
 async function getIkuuuCookie() {
 
