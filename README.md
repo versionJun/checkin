@@ -1,6 +1,6 @@
 | 参数          | 说明                                             |
 | ------------- | ------------------------------------------------ |
-| GP_TOKEN | 在 Action 中运行时更新 REFRESH_TOKENS|
+| GP_TOKEN | 在 Action 中运行时更新 Repository secrets|
 | PUSHPLUS_TOKEN | [pushplus](http://www.pushplus.plus) Token 消息推送 |
 | REFRESH_TOKENS  | [阿里云盘](https://www.aliyundrive.com/drive) refresh_token, 多个账号 `&` 隔开 |
 | GLADOS_COOKIE  | [GLADOS](https://glados.rocks/console) cookie, 多个账号 `&` 隔开 |
