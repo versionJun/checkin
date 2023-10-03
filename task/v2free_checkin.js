@@ -63,6 +63,8 @@ function go_user_url(cookie){
                     cookieMap.set(key, value);
                 })
 
+            let checkin_result = await go_checkin_url(V2FREE_COOKIE)
+            
             remarks += `---${checkin_result.data.msg}`
 
             if (checkin_result.data.ret == 1){
