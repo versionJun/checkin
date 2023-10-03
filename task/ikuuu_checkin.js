@@ -75,8 +75,8 @@ function go_user_url(cookie){
             let user_result = await go_user_url(IKUUU_COOKIE)
 
             let html_dom = new jsdom.JSDOM(user_result.data)
-
-            let unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim()
+            
+            let unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim()
 
             remarks += `---剩余流量:${unUsedTraffic}`
             
