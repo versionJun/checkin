@@ -48,6 +48,8 @@ function go_user_url(cookie){
 
     const V2FREE_COOKIE_ARR = await getV2freeCookie()
 
+    const COOKIE_INVALIDDITY = 'cookie已过期或无效'
+
     let index = 1
     const message = []
     for await (V2FREE_COOKIE of V2FREE_COOKIE_ARR) {
@@ -65,21 +67,29 @@ function go_user_url(cookie){
 
             let checkin_result = await go_checkin_url(V2FREE_COOKIE)
 
-            remarks += `---${cookieMap.get("email")}---${checkin_result.data.msg}`
+            let checkin_result_msg = (checkin_result.data.msg != undefined ? checkin_result.data.msg : COOKIE_INVALIDDITY)
 
-            if (checkin_result.data.ret == 1){
+            remarks += `---${checkin_result_msg}`
 
-                 remarks += `---剩余流量:${checkin_result.data.trafficInfo.unUsedTraffic}`
-                
-            } else {
+            if (checkin_result_msg != COOKIE_INVALIDDITY) {
 
-                let user_result = await go_user_url(V2FREE_COOKIE)
-
-                let html_dom = new jsdom.JSDOM(user_result.data)
-
-                let unUsedTraffic = html_dom.window.document.querySelector('.nodename > a[href^="/user/trafficlog"]').textContent.trim()
-
-                remarks += `---剩余流量:${unUsedTraffic}`
+                remarks += `---${cookieMap.get("email")}`
+    
+                if (checkin_result.data.ret == 1){
+    
+                    remarks += `---剩余流量:${checkin_result.data.trafficInfo.unUsedTraffic}`
+    
+                } else {
+    
+                    let user_result = await go_user_url(V2FREE_COOKIE)
+    
+                    let html_dom = new jsdom.JSDOM(user_result.data)
+    
+                    let unUsedTraffic = html_dom.window.document.querySelector('.nodename > a[href^="/user/trafficlog"]').textContent.trim()
+    
+                    remarks += `---剩余流量:${unUsedTraffic}`
+    
+                }
 
             }
 
