@@ -1,0 +1,40 @@
+name: "v2fee_checkin"
+
+on:
+  schedule:
+    # UTC 16点30分(北京时间 0点30分) 30 16 * * *
+    - cron: "30 16 * * *"
+  workflow_dispatch:
+
+env:
+  RUN_ENV: 'prod'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main 
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js 
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Random sleep
+        if: github.event_name == 'schedule'
+        run: sleep $(shuf -i 10-300 -n 1)
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run js
+        env:
+          V2FREE_COOKIE: ${{ secrets.V2FREE_COOKIE }}
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+        run: |
+          node ./task/v2fee_checkin.js
