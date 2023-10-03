@@ -49,6 +49,8 @@ function go_my_url(cookie){
 !(async () => {
 
     const HIFIN_COOKIE_ARR = await getHifinCookie()
+
+    const COOKIE_INVALIDDITY = 'cookie已过期或无效'
     
     let index = 1
     const message = []
@@ -60,21 +62,25 @@ function go_my_url(cookie){
 
             let html_dom = new jsdom.JSDOM(sign_result.data)
 
-            let username = html_dom.window.document.querySelector(".username") ? html_dom.window.document.querySelector(".username").textContent.trim() : 'cookie已过期或无效'
+            let username = html_dom.window.document.querySelector(".username") ? html_dom.window.document.querySelector(".username").textContent.trim() : COOKIE_INVALIDDITY
             
             let msg = html_dom.window.document.querySelector("#body") ? html_dom.window.document.querySelector("#body").textContent.trim() : null
             
-            if(username) remarks += `---${username}`
+            if (username) remarks += `---${username}`
 
-            if(msg) remarks += `---${msg}`
+            if (msg) remarks += `---${msg}`
 
-            let my_result = await go_my_url(HIFIN_COOKIE)
+            if (username != COOKIE_INVALIDDITY) {
 
-            html_dom = new jsdom.JSDOM(my_result.data)
+                let my_result = await go_my_url(HIFIN_COOKIE)
 
-            let species = Array.from(html_dom.window.document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
+                html_dom = new jsdom.JSDOM(my_result.data)
 
-            remarks += `---剩余金币:${species}`
+                let species = Array.from(html_dom.window.document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
+    
+                remarks += `---剩余金币:${species}`
+
+            } 
             
             console.log(remarks)
 
