@@ -1,4 +1,5 @@
-const axios = require("axios");
+const axios = require("axios")
+const jsdom = require("jsdom")
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
 
@@ -36,6 +37,16 @@ function go_checkin_url(cookie){
     })
 }
 
+function go_user_url(cookie){
+    return axios(`${BASE_URL}user/`, {
+        method: 'GET',
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'Cookie': cookie
+        }
+    })
+}
+
 !(async () => {
 
     const IKUUU_COOKIE_ARR = await getIkuuuCookie()
@@ -60,6 +71,14 @@ function go_checkin_url(cookie){
             remarks += '---' + cookieMap.get("email")
 
             remarks += '---' + (checkin_result.data.msg != undefined ? checkin_result.data.msg : 'cookie已过期或无效')
+
+            let user_result = await go_user_url(IKUUU_COOKIE)
+
+            let html_dom = new jsdom.JSDOM(user_result.data)
+
+            let unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim()
+
+            remarks += `---剩余流量:${unUsedTraffic}`
             
             console.log(remarks)
 
