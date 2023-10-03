@@ -35,6 +35,17 @@ function go_sign_url(cookie){
     })
 }
 
+function go_my_url(cookie){
+    return axios('https://www.hifini.com/my.htm', {
+        method: 'GET',
+        headers: {
+            'Cookie': cookie,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'Content-Type': 'text/html; charset=utf-8'
+        }
+    })
+}
+
 !(async () => {
 
     const HIFIN_COOKIE_ARR = await getHifinCookie()
@@ -47,17 +58,23 @@ function go_sign_url(cookie){
 
             let sign_result = await go_sign_url(HIFIN_COOKIE)
 
-            let html_str = sign_result.data
-
-            let html_dom = new jsdom.JSDOM(html_str)
+            let html_dom = new jsdom.JSDOM(sign_result.data)
 
             let username = html_dom.window.document.querySelector(".username") ? html_dom.window.document.querySelector(".username").textContent.trim() : 'cookie已过期或无效'
             
             let msg = html_dom.window.document.querySelector("#body") ? html_dom.window.document.querySelector("#body").textContent.trim() : null
             
-            if(username) remarks += "---" + username
+            if(username) remarks += `---${username}`
 
-            if(msg) remarks += "---" + msg
+            if(msg) remarks += `---${msg}`
+
+            let my_result = await go_my_url(HIFIN_COOKIE)
+
+            html_dom = new jsdom.JSDOM(my_result.data)
+
+            let species = Array.from(html_dom.window.document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
+
+            remarks += `---剩余金币:${species}`
             
             console.log(remarks)
 
