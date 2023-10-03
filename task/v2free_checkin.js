@@ -64,8 +64,8 @@ function go_user_url(cookie){
                 })
 
             let checkin_result = await go_checkin_url(V2FREE_COOKIE)
-            
-            remarks += `---${checkin_result.data.msg}`
+
+            remarks += `---${cookieMap.get("email")}---${checkin_result.data.msg}`
 
             if (checkin_result.data.ret == 1){
 
