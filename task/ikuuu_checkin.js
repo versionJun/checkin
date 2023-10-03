@@ -50,6 +50,8 @@ function go_user_url(cookie){
 !(async () => {
 
     const IKUUU_COOKIE_ARR = await getIkuuuCookie()
+
+    const COOKIE_INVALIDDITY = 'cookie已过期或无效'
     
     let index = 1
     const message = []
@@ -67,18 +69,21 @@ function go_user_url(cookie){
                 })
 
             let checkin_result = await go_checkin_url(IKUUU_COOKIE)
-
-            remarks += '---' + cookieMap.get("email")
-
-            remarks += '---' + (checkin_result.data.msg != undefined ? checkin_result.data.msg : 'cookie已过期或无效')
-
-            let user_result = await go_user_url(IKUUU_COOKIE)
-
-            let html_dom = new jsdom.JSDOM(user_result.data)
             
-            let unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim()
+            let checkin_result_msg = (checkin_result.data.msg != undefined ? checkin_result.data.msg : COOKIE_INVALIDDITY)
+            
+            remarks += `---${checkin_result_msg}`
+            
+            if (checkin_result_msg != COOKIE_INVALIDDITY) {
 
-            remarks += `---剩余流量:${unUsedTraffic}`
+                let user_result = await go_user_url(IKUUU_COOKIE)
+    
+                let html_dom = new jsdom.JSDOM(user_result.data)
+                                
+                let unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim()
+                            
+                remarks += `---${cookieMap.get("email")}---剩余流量:${unUsedTraffic}`
+            }
             
             console.log(remarks)
 
