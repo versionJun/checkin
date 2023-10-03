@@ -1,4 +1,5 @@
 const axios = require("axios")
+const jsdom = require("jsdom")
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
 
@@ -33,6 +34,16 @@ function go_checkin_url(cookie) {
     })
 }
 
+function go_user_url(cookie){
+    return axios('https://cdn.v2free.net/user/', {
+        method: 'GET',
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'Cookie': cookie
+        }
+    })
+}
+
 !(async () => {
 
     const V2FREE_COOKIE_ARR = await getV2freeCookie()
@@ -52,14 +63,23 @@ function go_checkin_url(cookie) {
                     cookieMap.set(key, value);
                 })
 
-            let checkin_result = await go_checkin_url(V2FREE_COOKIE)
+            remarks += `---${checkin_result.data.msg}`
 
-            remarks += '---' + cookieMap.get("email")
+            if (checkin_result.data.ret == 1){
 
-            if (checkin_result.data.ret == 1)
-                remarks += '---签到成功---' + checkin_result.data.msg + '---剩余流量---' + checkin_result.data.trafficInfo.unUsedTraffic
-            else
-                remarks += '---' + checkin_result.data.msg
+                 remarks += `---剩余流量:${checkin_result.data.trafficInfo.unUsedTraffic}`
+                
+            } else {
+
+                let user_result = await go_user_url(V2FREE_COOKIE)
+
+                let html_dom = new jsdom.JSDOM(user_result.data)
+
+                let unUsedTraffic = html_dom.window.document.querySelector('.nodename > a[href^="/user/trafficlog"]').textContent.trim()
+
+                remarks += `---剩余流量:${unUsedTraffic}`
+
+            }
 
             console.log(remarks)
 
