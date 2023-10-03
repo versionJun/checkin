@@ -19,28 +19,19 @@ function updateAccesssToken(queryBody, remarks) {
         headers: { 'Content-Type': 'application/json' }
     })
     .then(d => d.data)
-    .then(d => {
-        const { code, message, nick_name, refresh_token, access_token } = d
-        if (code) {
-            console.log('error > updateAccesssToken > code = ' + code);
-            console.log('error > updateAccesssToken > message = ' + message);
-            console.log('error > updateAccesssToken > d = ' + d);
-            if (
-                code === 'RefreshTokenExpired' ||
-                code === 'InvalidParameter.RefreshToken'
-            ) {
-                errorMessage.push('refresh_token 已过期或无效')
-            } else {
-                errorMessage.push(message)
-            }
-            return Promise.reject(errorMessage.join(', '))
-        }
-        return { nick_name, refresh_token, access_token }
-    })
     .catch(e => {
-        console.log('updateAccesssToken > catch > e = '  + e);
+        console.log(`updateAccesssToken > catch > e = ${e.message};e.response.data = ${JSON.stringify(e.response.data)}`);
         console.error(e);
         errorMessage.push(e.message)
+        const { code, message } = e.response.data
+        if (
+            code === 'RefreshTokenExpired' ||
+            code === 'InvalidParameter.RefreshToken'
+        ) {
+            errorMessage.push('refresh_token 已过期或无效')
+        } else {
+            errorMessage.push(message)
+        }
         return Promise.reject(errorMessage.join(', '))
     })
 }
