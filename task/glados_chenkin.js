@@ -74,19 +74,32 @@ async function getGladosCookie() {
             let leftdays = parseInt(statis_result.data.data.leftDays)
             let email = statis_result.data.data.email
 
-            if(msg && leftdays && email)
-                remarks += "---" + email + "---结果---" + msg + "---剩余(" + leftdays + ")天"
-            else
-                remarks += "---"  + "cookie已失效"
+            if (checkin_result.data.code == -2 ){
+                
+                remarks += `---cookie已失效---${checkin_result.data.message}`
+
+            } else {
+
+                let msg = checkin_result.data.message
+
+                let balance = parseInt(checkin_result.data.list[0].balance)
+
+                let leftdays = parseInt(statis_result.data.data.leftDays)
+
+                let email = statis_result.data.data.email
+
+                remarks += `---${email}---结果:${msg}---天数:${leftdays}---点数:${balance}`
+
+            }
             
             console.log(remarks)
             
             message.push(remarks)
 
         } catch (e) {
-            console.error(e)
             message.push(remarks + "---" +e)
-            console.log(message);
+            console.log(message)
+            console.error(e)
         }
         index++
     }
