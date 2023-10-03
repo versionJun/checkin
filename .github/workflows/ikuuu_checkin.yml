@@ -34,7 +34,6 @@ jobs:
 
       - name: Run js
         env:
-          BASE_URL: ${{ secrets.BASE_URL }}
           IKUUU_COOKIE: ${{ secrets.IKUUU_COOKIE }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
         run: |
