@@ -97,9 +97,9 @@ async function getGladosCookie() {
             message.push(remarks)
 
         } catch (e) {
+            console.error(e)
             message.push(remarks + "---" +e)
             console.log(message)
-            console.error(e)
         }
         index++
     }
