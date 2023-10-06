@@ -111,7 +111,7 @@ async function checkin(cookie, captcha) {
 
 async function flow_checkin(flow){
     
-    if (flow.count_num >= 3) {
+    if (flow.count_num >= 5) {
 
         flow.msg += `---签到失败---已达设定最高请求次数:(${flow.count_num})`
 
@@ -197,8 +197,6 @@ async function flow_checkin(flow){
     
                 await flow_checkin(flow)
     
-                console.log(`flow.msg = ${flow.msg}`)
-
                 remarks += `---${flow.msg}`
                 
             } else {    
@@ -207,6 +205,8 @@ async function flow_checkin(flow){
     
             }
 
+            console.log(`remarks = ${remarks}`)
+            
             message.push(remarks)
 
         } catch (e) {
@@ -216,11 +216,13 @@ async function flow_checkin(flow){
         }
         index++
     }
+
+    console.log(message)
     
-    await sent_message_by_pushplus({ 
-        title: `${path.parse(__filename).name}_${new Date().toLocaleString()}`,
-        message: message.join('\n') 
-    });
+    // await sent_message_by_pushplus({ 
+    //     title: `${path.parse(__filename).name}_${new Date().toLocaleString()}`,
+    //     message: message.join('\n') 
+    // });
 })()
 
 
