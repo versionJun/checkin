@@ -3,7 +3,7 @@ name: "tly_checkin"
 on:
   schedule:
     # UTC 16点30分(北京时间 0点30分) 30 16 * * *
-    # - cron: "30 16 * * *"
+    - cron: "30 16 * * *"
   workflow_dispatch:
 
 env:
