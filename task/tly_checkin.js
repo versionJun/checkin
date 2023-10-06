@@ -185,15 +185,17 @@ async function flow_checkin(flow){
             let last_sign_time = await login(flow.cookie)
     
             let timestamp_1 = Date.parse(new Date(last_sign_time).toString())
+
+            let now_sign_time = new Date().toLocaleString('zh-CN')
     
-            let timestamp_2 = Date.parse(new Date().toString())
+            let timestamp_2 = Date.parse(now_sign_time)
     
             if (
                 (timestamp_2 - timestamp_1) > (24 * 60 * 60 * 1000)
                 // || true    // for test
                 ) {
     
-                console.log('距上次签到时间大于24小时啦,可签到')
+                console.log(`距上次签到时间大于24小时啦,可签到(上次签到时间:${last_sign_time})(本次触发时间:${now_sign_time})`)
     
                 await flow_checkin(flow)
     
@@ -201,7 +203,7 @@ async function flow_checkin(flow){
                 
             } else {    
 
-                remarks += `---还未到时间！(上次签到时间:${last_sign_time})`
+                remarks += `---还未到时间！(上次签到时间:${last_sign_time})(本次触发时间:${now_sign_time})`
     
             }
 
