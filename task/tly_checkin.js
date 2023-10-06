@@ -190,6 +190,7 @@ async function flow_checkin(flow){
     
             if (
                 (timestamp_2 - timestamp_1) > (24 * 60 * 60 * 1000)
+                || true
                 ) {
     
                 console.log('距上次签到时间大于24小时啦,可签到')
