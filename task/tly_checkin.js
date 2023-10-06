@@ -186,7 +186,7 @@ async function flow_checkin(flow){
     
             let timestamp_1 = Date.parse(new Date(last_sign_time).toString())
 
-            let now_sign_time = new Date().toLocaleString('zh-CN')
+            let now_sign_time = new Date().toString()
     
             let timestamp_2 = Date.parse(now_sign_time)
     
