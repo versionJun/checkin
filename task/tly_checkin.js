@@ -195,7 +195,7 @@ async function flow_checkin(flow){
                 // || true    // for test
                 ) {
     
-                console.log(`距上次签到时间大于24小时啦,可签到(上次签到时间:${last_sign_time})(本次触发时间:${now_sign_time})`)
+                // console.log(`距上次签到时间大于24小时啦,可签到(上次签到时间:${last_sign_time})(本次触发时间:${now_sign_time})`)
     
                 await flow_checkin(flow)
     
