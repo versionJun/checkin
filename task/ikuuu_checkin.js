@@ -9,9 +9,10 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
 
+
 const BASE_URL = "https://ikuuu.art/";
 
-async function getIkuuuCookie() {
+function getIkuuuCookie() {
 
     let IKUUU_COOKIE = process.env.IKUUU_COOKIE || ''
     
@@ -30,6 +31,21 @@ async function getIkuuuCookie() {
     return IKUUU_COOKIE_ARR
 }
 
+function getCookieMap(cookie){
+
+    const cookieMap = new Map();
+
+    decodeURIComponent(cookie)
+        .split(/\s*;\s*/)
+        .filter(item => item != '')
+        .forEach((item) => {
+            const [key, value] = item.split("=");
+            cookieMap.set(key, value);
+        })
+
+    return cookieMap
+}
+
 function go_checkin_url(cookie){
     return axios(`${BASE_URL}user/checkin`, {
         method: 'POST',
@@ -41,6 +57,16 @@ function go_checkin_url(cookie){
             'Content-Type': 'text/html; charset=utf-8'
         }
     })
+    .then(d => {
+        // console.log(d.data)
+        // { ret: 0, msg: '您似乎已经签到过了...' }
+        // { ret: 1, msg: '你获得了 1792 MB流量' }
+
+        if (d.data.msg == undefined) 
+            return Promise.reject('cookie已过期或无效')
+
+        return d.data
+    })
 }
 
 function go_user_url(cookie){
@@ -51,61 +77,60 @@ function go_user_url(cookie){
             'Cookie': cookie
         }
     })
+    .then(d => {
+
+        const html_dom = new jsdom.JSDOM(d.data)
+
+        // $('.card-wrap:contains("剩余流量") > .card-body').text().trim()
+        // $('.card-wrap > .card-body:contains("GB")').text().trim() 
+
+        // Array.from(document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim() 
+        const unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim()
+
+        // Array.from(document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim() 
+        // let unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim()
+        
+        return { unUsedTraffic }
+    })
 }
 
 !(async () => {
 
-    const IKUUU_COOKIE_ARR = await getIkuuuCookie()
-
-    const COOKIE_INVALIDDITY = 'cookie已过期或无效'
+    const IKUUU_COOKIE_ARR = getIkuuuCookie()
     
     let index = 1
     const message = []
-    for await (IKUUU_COOKIE of IKUUU_COOKIE_ARR) {
-        let remarks = "账号" + index
+    for (IKUUU_COOKIE of IKUUU_COOKIE_ARR) {
+        let account = `账号${index}`
+        let remarks = `${account}`
         try {
-            const cookieMap = new Map();
+            const cookieMap = getCookieMap(IKUUU_COOKIE)
 
-            decodeURIComponent(IKUUU_COOKIE)
-                .split(/\s*;\s*/)
-                .filter(item => item != '')
-                .forEach((cookie) => {
-                    const [key, value] = cookie.split("=");
-                    cookieMap.set(key, value);
-                })
+            const checkin_result = await go_checkin_url(IKUUU_COOKIE)
+            
+            remarks += `---${checkin_result.msg}`
 
-            let checkin_result = await go_checkin_url(IKUUU_COOKIE)
-            
-            let checkin_result_msg = (checkin_result.data.msg != undefined ? checkin_result.data.msg : COOKIE_INVALIDDITY)
-            
-            remarks += `---${checkin_result_msg}`
-            
-            if (checkin_result_msg != COOKIE_INVALIDDITY) {
+            const { unUsedTraffic } = await go_user_url(IKUUU_COOKIE)
 
-                let user_result = await go_user_url(IKUUU_COOKIE)
-    
-                let html_dom = new jsdom.JSDOM(user_result.data)
-                                
-                let unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim()
-                            
-                remarks += `---${cookieMap.get("email")}---剩余流量:${unUsedTraffic}`
-            }
-            
+            remarks += `---${cookieMap.get("email")}---剩余流量:${unUsedTraffic}`
+
             console.log(remarks)
 
             message.push(remarks)
 
         } catch (e) {
+            console.log(`${account} catch > e = ${e}`);
             console.error(e)
             message.push(remarks + "---" +e)
-            console.log(message);
         }
         index++
     }
+
+    // console.log(message)
 
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
         message: message.join('\n') 
     });
-
+    
 })()
