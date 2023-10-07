@@ -2,6 +2,13 @@ const axios = require('axios')
 const path = require('path')
 const fs = require('fs')
 const jsdom = require("jsdom")
+const dayjs = require('dayjs')
+const utc = require('dayjs/plugin/utc')
+const timezone = require('dayjs/plugin/timezone')
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault('Asia/Shanghai')
+
 const { getBaiduAccessToken, getBaiduOCR } = require('../utils/baidu.js')
 const { sent_message_by_pushplus } = require('../utils/message.js')
 
@@ -183,30 +190,27 @@ async function flow_checkin(flow){
             let flow = { count_num: 0, msg: '' ,cookie: ILY_COOKIE, baidu_access_token:'' }
     
             let last_sign_time = await login(flow.cookie)
-    
-            let timestamp_1 = Date.parse(new Date(last_sign_time).toString())
 
-            let now_sign_time = new Date().toString()
-    
-            let timestamp_2 = Date.parse(now_sign_time)
-    
-            if (
-                (timestamp_2 - timestamp_1) > (24 * 60 * 60 * 1000)
-                // || true    // for test
-                ) {
-    
-                // console.log(`距上次签到时间大于24小时啦,可签到(上次签到时间:${last_sign_time})(本次触发时间:${now_sign_time})`)
-    
+            let last_dayjs = dayjs(last_sign_time, 'YYYY-MM-DD HH:mm:ss')
+            
+            let now_dayjs = dayjs.tz()
+
+            let time_str = `(上次签到时间:${last_sign_time})(本次触发时间:${now_dayjs.format('YYYY-MM-DD HH:mm:ss')})`
+
+            if (now_dayjs.diff(last_dayjs, 'day') >= 1 ) {
+
+                console.log(`距上次签到时间大于24小时啦,可签到${time_str}`)
+
                 await flow_checkin(flow)
-    
+
                 remarks += `---${flow.msg}`
+
+            } else {
+
+               remarks += `还未到时间！${time_str}`
                 
-            } else {    
-
-                remarks += `---还未到时间！(上次签到时间:${last_sign_time})(本次触发时间:${now_sign_time})`
-    
             }
-
+            
             console.log(`remarks = ${remarks}`)
             
             message.push(remarks)
