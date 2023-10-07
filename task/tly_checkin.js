@@ -2,15 +2,14 @@ const axios = require('axios')
 const path = require('path')
 const fs = require('fs')
 const jsdom = require("jsdom")
+const { getBaiduAccessToken, getBaiduOCR } = require('../utils/baidu.js')
+const { sent_message_by_pushplus } = require('../utils/message.js')
 const dayjs = require('dayjs')
 const utc = require('dayjs/plugin/utc')
 const timezone = require('dayjs/plugin/timezone')
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
-
-const { getBaiduAccessToken, getBaiduOCR } = require('../utils/baidu.js')
-const { sent_message_by_pushplus } = require('../utils/message.js')
 
 
 const TLY_BASE_URL = 'https://tly31.com/'
