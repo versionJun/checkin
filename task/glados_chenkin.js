@@ -8,6 +8,7 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
 
+
 const checkin_url = "https://glados.rocks/api/user/checkin"
 const status_url = "https://glados.rocks/api/user/status"
 const referer = 'https://glados.rocks/console/checkin'
@@ -29,6 +30,15 @@ function go_checkin_url(cookie){
             'Content-Type': 'application/json;charset=UTF-8'
         }
     })
+    .then(d => {
+        // console.log(JSON.stringify(d.data))
+        // { code: -2, message: '没有权限' }
+
+        if (d.data.code == -2 )
+            return Promise.reject(`cookie已过期或无效(${d.data.message})`)
+
+        return d.data
+    })
 
 }
 
@@ -42,9 +52,10 @@ function go_status_url(cookie){
             'User-Agent': useragent
         }
     })
+    .then(d => d.data)
 }
 
-async function getGladosCookie() {
+function getGladosCookie() {
 
     let GLADOS_COOKIE = process.env.GLADOS_COOKIE || ''
 
@@ -65,54 +76,44 @@ async function getGladosCookie() {
 
 !(async () => {
 
-    const GLADOS_COOKIE_ARR = await getGladosCookie()
+    const GLADOS_COOKIE_ARR = getGladosCookie()
     let index = 1
     const message = []
-    for await (GLADOS_COOKIE of GLADOS_COOKIE_ARR) {
-        let remarks = "账号" + index
+    for (GLADOS_COOKIE of GLADOS_COOKIE_ARR) {
+        let account = `账号${index}`
+        let remarks = `${account}`
         try {
 
-            let checkin_result = await go_checkin_url(GLADOS_COOKIE);
+            const checkin_result = await go_checkin_url(GLADOS_COOKIE);
 
-            let statis_result = await go_status_url(GLADOS_COOKIE);
-            
-            let msg = checkin_result.data.message
-            let leftdays = parseInt(statis_result.data.data.leftDays)
-            let email = statis_result.data.data.email
+            const statis_result = await go_status_url(GLADOS_COOKIE);
 
-            if (checkin_result.data.code == -2 ){
-                
-                remarks += `---cookie已失效---${checkin_result.data.message}`
+            const msg = checkin_result.message
 
-            } else {
+            const balance = parseInt(checkin_result.list[0].balance)
 
-                let msg = checkin_result.data.message
+            const leftdays = parseInt(statis_result.data.leftDays)
 
-                let balance = parseInt(checkin_result.data.list[0].balance)
+            const email = statis_result.data.email
 
-                let leftdays = parseInt(statis_result.data.data.leftDays)
+            remarks += `---${email}---结果:${msg}---天数:${leftdays}---点数:${balance}`
 
-                let email = statis_result.data.data.email
-
-                remarks += `---${email}---结果:${msg}---天数:${leftdays}---点数:${balance}`
-
-            }
-            
             console.log(remarks)
-            
+
             message.push(remarks)
 
         } catch (e) {
+            console.log(`${account} catch > e = ${e}`);
             console.error(e)
             message.push(remarks + "---" +e)
-            console.log(message)
         }
         index++
     }
+
+    // console.log(message)
 
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
         message: message.join('\n') 
     });
-
 })()
