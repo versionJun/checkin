@@ -9,7 +9,8 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
 
-async function getHifinCookie() {
+
+function getHifinCookie() {
 
     let HIFIN_COOKIE = process.env.HIFIN_COOKIE || ''
 
@@ -39,6 +40,23 @@ function go_sign_url(cookie){
             'Content-Type': 'text/html; charset=utf-8'
         }
     })
+    .then(d => {
+
+        const html_dom = new jsdom.JSDOM(d.data)
+
+        const username_element = html_dom.window.document.querySelector(".username")
+
+        if (!username_element) 
+            return Promise.reject('cookie已过期或无效')
+
+        const username = username_element.textContent.trim()
+        
+        const msg_element = html_dom.window.document.querySelector("#body")
+        
+        const msg = msg_element ? msg_element.textContent.trim() : null
+
+        return { username, msg }
+    })
 }
 
 function go_my_url(cookie){
@@ -50,55 +68,51 @@ function go_my_url(cookie){
             'Content-Type': 'text/html; charset=utf-8'
         }
     })
+    .then(d => {
+
+        const html_dom = new jsdom.JSDOM(d.data)
+
+        // Array.from(document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
+        const species = Array.from(html_dom.window.document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
+        
+        return { species }
+    })
 }
 
 !(async () => {
 
     const HIFIN_COOKIE_ARR = await getHifinCookie()
-
-    const COOKIE_INVALIDDITY = 'cookie已过期或无效'
     
     let index = 1
     const message = []
-    for await (HIFIN_COOKIE of HIFIN_COOKIE_ARR) {
-        let remarks = "账号" + index
+    for (HIFIN_COOKIE of HIFIN_COOKIE_ARR) {
+        let account = `账号${index}`
+        let remarks = `${account}`
         try {
-
-            let sign_result = await go_sign_url(HIFIN_COOKIE)
-
-            let html_dom = new jsdom.JSDOM(sign_result.data)
-
-            let username = html_dom.window.document.querySelector(".username") ? html_dom.window.document.querySelector(".username").textContent.trim() : COOKIE_INVALIDDITY
+                
+            const { username, msg } = await go_sign_url(HIFIN_COOKIE)
             
-            let msg = html_dom.window.document.querySelector("#body") ? html_dom.window.document.querySelector("#body").textContent.trim() : null
-            
-            if (username) remarks += `---${username}`
+            remarks += `---${username}`
 
             if (msg) remarks += `---${msg}`
 
-            if (username != COOKIE_INVALIDDITY) {
+            const { species } = await go_my_url(HIFIN_COOKIE)
 
-                let my_result = await go_my_url(HIFIN_COOKIE)
+            remarks += `---剩余金币:${species}`
 
-                html_dom = new jsdom.JSDOM(my_result.data)
-
-                let species = Array.from(html_dom.window.document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
-    
-                remarks += `---剩余金币:${species}`
-
-            } 
-            
             console.log(remarks)
 
             message.push(remarks)
 
         } catch (e) {
+            console.log(`${account} catch > e = ${e}`);
             console.error(e)
             message.push(remarks + "---" +e)
-            console.log(message);
         }
         index++
     }
+
+    // console.log(message)
 
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
