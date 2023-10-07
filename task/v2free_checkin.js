@@ -2,6 +2,12 @@ const axios = require("axios")
 const jsdom = require("jsdom")
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
+const dayjs = require('dayjs')
+const utc = require('dayjs/plugin/utc')
+const timezone = require('dayjs/plugin/timezone')
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault('Asia/Shanghai')
 
 async function getV2freeCookie() {
 
@@ -105,7 +111,7 @@ function go_user_url(cookie){
     }
 
     await sent_message_by_pushplus({ 
-        title: `${path.parse(__filename).name}_${new Date().toLocaleString()}`,
+        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
         message: message.join('\n') 
     });
 
