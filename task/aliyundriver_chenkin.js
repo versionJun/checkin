@@ -2,6 +2,10 @@ const axios = require('axios')
 const path = require('path')
 const { createOrUpdateARepositorySecret } = require('../utils/github.js')
 const { sent_message_by_pushplus } = require('../utils/message.js')
+const dayjs = require('dayjs')
+const timezone = require('dayjs/plugin/timezone')
+dayjs.extend(timezone)
+dayjs.tz.setDefault('Asia/Shanghai')
 
 const updateAccesssTokenURL = 'https://auth.aliyundrive.com/v2/account/token'
 const signinURL = 'https://member.aliyundrive.com/v1/activity/sign_in_list?_rx-s=mobile'
@@ -200,7 +204,7 @@ async function getRefreshTokenArray() {
     }
 
     await sent_message_by_pushplus({ 
-        title: `${path.parse(__filename).name}_${new Date().toLocaleString()}`,
+        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
         message: message.join('\n') 
     });
     
