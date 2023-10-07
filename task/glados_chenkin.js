@@ -1,6 +1,12 @@
 const axios = require('axios')
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
+const dayjs = require('dayjs')
+const utc = require('dayjs/plugin/utc')
+const timezone = require('dayjs/plugin/timezone')
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault('Asia/Shanghai')
 
 const checkin_url = "https://glados.rocks/api/user/checkin"
 const status_url = "https://glados.rocks/api/user/status"
@@ -105,7 +111,7 @@ async function getGladosCookie() {
     }
 
     await sent_message_by_pushplus({ 
-        title: `${path.parse(__filename).name}_${new Date().toLocaleString()}`,
+        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
         message: message.join('\n') 
     });
 
