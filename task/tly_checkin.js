@@ -225,7 +225,7 @@ async function flow_checkin(flow){
     console.log(message)
     
     // await sent_message_by_pushplus({ 
-    //     title: `${path.parse(__filename).name}_${new Date().toLocaleString()}`,
+    //     title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
     //     message: message.join('\n') 
     // });
 })()
