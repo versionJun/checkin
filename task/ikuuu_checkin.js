@@ -8,30 +8,75 @@ const timezone = require('dayjs/plugin/timezone')
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
-
+const tough = require('tough-cookie')
+const Cookie = tough.Cookie
 
 const BASE_URL = "https://ikuuu.art/";
+const LOGIN_URL = `${BASE_URL}auth/login`
+const USER_URL = `${BASE_URL}user/`
+const CHECKIN_URL = `${BASE_URL}user/checkin`
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
 
-function getIkuuuCookie() {
 
-    let IKUUU_COOKIE = process.env.IKUUU_COOKIE || ''
-    
-    let IKUUU_COOKIE_ARR = []
+function getUser() {
 
-    if (IKUUU_COOKIE.indexOf('&') > -1)
-        IKUUU_COOKIE_ARR = IKUUU_COOKIE.split(/\s*&\s*/).filter(item => item != '')
-    else if (IKUUU_COOKIE)
-        IKUUU_COOKIE_ARR = [IKUUU_COOKIE]
+    const userJsonStr = process.env.IKUUU_USER || ''
 
-    if (!IKUUU_COOKIE_ARR.length) {
-        console.error("未获取到 IKUUU_COOKIE , 程序终止")
+    if (!userJsonStr) {
+        console.error("未获取到 IKUUU_USER , 程序终止")
         process.exit(0)
     }
-    
-    return IKUUU_COOKIE_ARR
+
+    let userJson = JSON.parse(userJsonStr)
+
+    if (!Array.isArray(userJson))
+        userJson = [userJson]
+
+    return userJson
 }
 
-function getCookieMap(cookie){
+function login(user){
+    return axios(`${LOGIN_URL}`, {
+        method: 'POST',
+        headers: {
+            'Origin': `${BASE_URL}`,
+            'referer': `${LOGIN_URL}`,
+            'User-Agent': UA,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data: {
+            email: user.email,
+            passwd: user.passwd
+        }
+    })
+    .then(d => {
+        // console.log(d)
+
+        // console.log(d.data)
+        // { ret: 1, msg: '登录成功' }
+        // { ret: 0, msg: '邮箱不存在' }
+        // { ret: 0, msg: '邮箱或者密码错误' }
+        if (d.data.ret !== 1) 
+            return Promise.reject(`登录失败(by:${d.data.msg})`)
+
+        // console.log(d.headers)
+        let cookies = []
+        if (Array.isArray(d.headers['set-cookie'])){
+            d.headers['set-cookie'].map(item => {
+                cookies.push(Cookie.parse(item).cookieString()) 
+            })
+        }
+        else {
+            cookies = [Cookie.parse(d.headers['set-cookie']).cookieString()]
+        }
+
+        // console.log(cookies)
+
+        return cookies.join(';')
+    })
+}
+
+function getCookieMap(cookie) {
 
     const cookieMap = new Map();
 
@@ -46,14 +91,14 @@ function getCookieMap(cookie){
     return cookieMap
 }
 
-function go_checkin_url(cookie){
-    return axios(`${BASE_URL}user/checkin`, {
+function go_checkin_url(cookie) {
+    return axios(`${CHECKIN_URL}`, {
         method: 'POST',
         headers: {
             'Origin': `${BASE_URL}`,
-            'referer': `${BASE_URL}user/`,
+            'referer': `${USER_URL}`,
             'Cookie': cookie,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'User-Agent': UA,
             'Content-Type': 'text/html; charset=utf-8'
         }
     })
@@ -62,23 +107,22 @@ function go_checkin_url(cookie){
         // { ret: 0, msg: '您似乎已经签到过了...' }
         // { ret: 1, msg: '你获得了 1792 MB流量' }
 
-        if (d.data.msg == undefined) 
+        if (d.data.msg == undefined)
             return Promise.reject('cookie已过期或无效')
 
         return d.data
     })
 }
 
-function go_user_url(cookie){
-    return axios(`${BASE_URL}user/`, {
+function go_user_url(cookie) {
+    return axios(`${USER_URL}`, {
         method: 'GET',
         headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'User-Agent': UA,
             'Cookie': cookie
         }
     })
     .then(d => {
-
         const html_dom = new jsdom.JSDOM(d.data)
 
         // $('.card-wrap:contains("剩余流量") > .card-body').text().trim()
@@ -89,30 +133,31 @@ function go_user_url(cookie){
 
         // Array.from(document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim() 
         // let unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim()
-        
+
         return { unUsedTraffic }
     })
 }
 
 !(async () => {
 
-    const IKUUU_COOKIE_ARR = getIkuuuCookie()
-    
+    const userArr = getUser()
+
     let index = 1
     const message = []
-    for (IKUUU_COOKIE of IKUUU_COOKIE_ARR) {
+    for (user of userArr) {
         let account = `账号${index}`
         let remarks = `${account}`
         try {
-            const cookieMap = getCookieMap(IKUUU_COOKIE)
 
-            const checkin_result = await go_checkin_url(IKUUU_COOKIE)
-            
-            remarks += `---${checkin_result.msg}`
+            const userCookie = await login(user)
 
-            const { unUsedTraffic } = await go_user_url(IKUUU_COOKIE)
+            const cookieMap = getCookieMap(userCookie)
 
-            remarks += `---${cookieMap.get("email")}---剩余流量:${unUsedTraffic}`
+            const checkin_result = await go_checkin_url(userCookie)
+
+            const { unUsedTraffic } = await go_user_url(userCookie)
+
+            remarks += `---${checkin_result.msg}---${cookieMap.get("email")}---剩余流量:${unUsedTraffic}`
 
             console.log(remarks)
 
@@ -132,5 +177,5 @@ function go_user_url(cookie){
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
         message: message.join('\n') 
     });
-    
+
 })()
