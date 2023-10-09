@@ -5,7 +5,7 @@
 | REFRESH_TOKENS  | [阿里云盘](https://www.aliyundrive.com/drive) refresh_token, 多个账号 `&` 隔开 |
 | GLADOS_COOKIE  | [GLADOS](https://glados.rocks/console) cookie, 多个账号 `&` 隔开 |
 | HIFIN_COOKIE  | [HIFIN](https://www.hifini.com/) cookie, 多个账号 `&` 隔开 |
-| IKUUU_COOKIE  | [IKUUU](https://ikuuu.art/) cookie, 多个账号 `&` 隔开 |
+| IKUUU_USER  | [IKUUU](https://ikuuu.art/) `[{"email":"","passwd":""},{"email":"","passwd":""}]` |
 | V2FREE_COOKIE  | [V2FREE](https://cdn.v2free.net/user) cookie, 多个账号 `&` 隔开 |
 
 > **获取 refresh_token 的方法**
