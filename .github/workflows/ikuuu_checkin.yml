@@ -34,7 +34,7 @@ jobs:
 
       - name: Run js
         env:
-          IKUUU_COOKIE: ${{ secrets.IKUUU_COOKIE }}
+          IKUUU_USER: ${{ secrets.IKUUU_USER }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
         run: |
           node ./task/ikuuu_checkin.js
