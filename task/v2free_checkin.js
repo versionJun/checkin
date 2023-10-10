@@ -1,5 +1,6 @@
 const axios = require("axios")
-const jsdom = require("jsdom")
+// const jsdom = require("jsdom")
+const cheerio = require('cheerio')
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
 const dayjs = require('dayjs')
@@ -86,9 +87,11 @@ function go_user_url(cookie){
     })
     .then(d => {
 
-        const html_dom = new jsdom.JSDOM(d.data)
+        // const html_dom = new jsdom.JSDOM(d.data)
+        // const unUsedTraffic = html_dom.window.document.querySelector('.nodename > a[href^="/user/trafficlog"]').textContent.trim()
 
-        const unUsedTraffic = html_dom.window.document.querySelector('.nodename > a[href^="/user/trafficlog"]').textContent.trim()
+        const $ = cheerio.load(d.data)
+        const unUsedTraffic = $('.nodename > a[href^="/user/trafficlog"]').text().trim()
 
         return { unUsedTraffic }
     })
