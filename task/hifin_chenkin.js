@@ -1,5 +1,5 @@
 const axios = require("axios")
-const jsdom = require("jsdom")
+// const jsdom = require("jsdom")
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
 const dayjs = require('dayjs')
@@ -42,19 +42,19 @@ function go_sign_url(cookie){
     })
     .then(d => {
 
-        const html_dom = new jsdom.JSDOM(d.data)
+       const $ = cheerio.load(d.data)
 
-        const username_element = html_dom.window.document.querySelector(".username")
+        const username_element = $('.nav-item.username')
 
         if (!username_element) 
             return Promise.reject('cookie已过期或无效')
 
-        const username = username_element.textContent.trim()
+        const username = username_element.text().trim()
         
-        const msg_element = html_dom.window.document.querySelector("#body")
+        const msg_element = $('#body')
         
-        const msg = msg_element ? msg_element.textContent.trim() : null
-
+        const msg = msg_element ? msg_element.text().trim() : null
+        
         return { username, msg }
     })
 }
@@ -70,10 +70,12 @@ function go_my_url(cookie){
     })
     .then(d => {
 
-        const html_dom = new jsdom.JSDOM(d.data)
+        const $ = cheerio.load(d.data)
+        const species = $('span.text-muted:contains("金币") > em').text().trim()
 
+        // const html_dom = new jsdom.JSDOM(d.data)
         // Array.from(document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
-        const species = Array.from(html_dom.window.document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
+        // const species = Array.from(html_dom.window.document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
         
         return { species }
     })
