@@ -1,5 +1,6 @@
 const axios = require("axios")
-const jsdom = require("jsdom")
+// const jsdom = require("jsdom")
+const cheerio = require('cheerio')
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
 const dayjs = require('dayjs')
@@ -123,16 +124,23 @@ function go_user_url(cookie) {
         }
     })
     .then(d => {
-        const html_dom = new jsdom.JSDOM(d.data)
+
+        const $ = cheerio.load(d.data)
 
         // $('.card-wrap:contains("剩余流量") > .card-body').text().trim()
-        // $('.card-wrap > .card-body:contains("GB")').text().trim() 
+        const unUsedTraffic = $('.card-wrap:contains("剩余流量") > .card-body').text().trim()
 
+        // $('.card-wrap > .card-body:contains("GB")').text().trim() 
+        // const unUsedTraffic = $('.card-wrap > .card-body:contains("GB")').text().trim() 
+        
+
+        // const html_dom = new jsdom.JSDOM(d.data)
+        
         // Array.from(document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim() 
         const unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim()
 
         // Array.from(document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim() 
-        // let unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim()
+        // const unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim()
 
         return { unUsedTraffic }
     })
