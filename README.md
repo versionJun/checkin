@@ -19,6 +19,10 @@
 >
 > 权限选择 `repo`, 不然不能更新 Secrets. 记住生成的 token, 离开页面后无法查看
 
+> **Mattraks/delete-workflow-runs@v2**
+> 
+> `Repository Settings` -> `Actions` -> `General` -> ` Read and write permissions`
+
 #### 参考项目
 - @mrabit: [mrabit/aliyundriveDailyCheck](https://github.com/mrabit/aliyundriveDailyCheck/)
 - @jinchaofs: [jinchaofs/v2free-checkin](https://github.com/jinchaofs/v2free-checkin/)
