@@ -32,10 +32,19 @@ jobs:
         run: |
           npm install
 
-      - name: Run js
+      - name: Run main
         env:
           REFRESH_TOKENS: ${{ secrets.REFRESH_TOKENS }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           GP_TOKEN: ${{ secrets.GP_TOKEN }}
         run: |
           node ./task/aliyundriver_chenkin.js
+          
+      - name: Delete old workflow run using Github Token
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 1
+          delete_workflow_pattern: "aliyundriver_chenkin"
