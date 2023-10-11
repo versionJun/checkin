@@ -32,9 +32,18 @@ jobs:
         run: |
           npm install
 
-      - name: Run js
+      - name: Run main
         env:
           V2FREE_COOKIE: ${{ secrets.V2FREE_COOKIE }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
         run: |
           node ./task/v2free_checkin.js
+
+      - name: Delete old workflow run using Github Token
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 1
+          delete_workflow_pattern: "v2free_checkin"
