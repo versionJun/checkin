@@ -26,18 +26,21 @@ function updateAccesssToken(queryBody, remarks) {
     })
     .then(d => d.data)
     .catch(e => {
-        console.log(`updateAccesssToken > catch > e = ${e.message};e.response.data = ${JSON.stringify(e.response.data)}`);
-        console.error(e);
+        console.error(e)
         errorMessage.push(e.message)
-        const { code, message } = e.response.data
-        if (
-            code === 'RefreshTokenExpired' ||
-            code === 'InvalidParameter.RefreshToken'
-        ) {
-            errorMessage.push('refresh_token 已过期或无效')
-        } else {
-            errorMessage.push(message)
-        }
+        console.log(`updateAccesssToken > catch > e = ${e.message}`)
+        if (e.response && e.response.data) {
+            console.log(`updateAccesssToken > catch > e.response.data = ${JSON.stringify(e.response.data)}`);
+            const { code, message } = e.response.data
+            if (
+                code === 'RefreshTokenExpired' ||
+                code === 'InvalidParameter.RefreshToken'
+            ) {
+                errorMessage.push('refresh_token 已过期或无效')
+            } else {
+                errorMessage.push(message)
+            }
+        } 
         return Promise.reject(errorMessage.join(', '))
     })
 }
