@@ -13,6 +13,8 @@ const updateAccesssTokenURL = 'https://auth.aliyundrive.com/v2/account/token'
 const signinURL = 'https://member.aliyundrive.com/v1/activity/sign_in_list?_rx-s=mobile'
 const rewardURL = 'https://member.aliyundrive.com/v1/activity/sign_in_reward?_rx-s=mobile'
 
+let updateAccesssTokenErrorReconnect = 0
+const updateAccesssTokenErrorReconnectMax = 3
 
 // 使用 refresh_token 更新 access_token
 // error "ETIMEDOUT" 当客户端请求未设超时，同时服务端也没设超时或者超时大于Linux kernel默认的20-second TCP socket connect timeout情况下，则达到20秒没连接成功，则报出"ETIMEDOUT"错误
@@ -41,6 +43,19 @@ function updateAccesssToken(queryBody, remarks) {
                 errorMessage.push(message)
             }
         } 
+
+        if (e.code && e.code === 'ETIMEDOUT' && updateAccesssTokenErrorReconnect < updateAccesssTokenErrorReconnectMax) {
+
+            updateAccesssTokenErrorReconnect++
+
+            console.log(`updateAccesssTokenErrorReconnect = ${updateAccesssTokenErrorReconnect}`)
+
+            remarks += `, updateAccesssTokenErrorReconnect = ${updateAccesssTokenErrorReconnect}`
+
+            return updateAccesssToken(queryBody, remarks)
+
+        }
+
         return Promise.reject(errorMessage.join(', '))
     })
 }
