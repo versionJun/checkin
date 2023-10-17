@@ -13,13 +13,10 @@ const updateAccesssTokenURL = 'https://auth.aliyundrive.com/v2/account/token'
 const signinURL = 'https://member.aliyundrive.com/v1/activity/sign_in_list?_rx-s=mobile'
 const rewardURL = 'https://member.aliyundrive.com/v1/activity/sign_in_reward?_rx-s=mobile'
 
-let updateAccesssTokenErrorReconnect = 0
-const updateAccesssTokenErrorReconnectMax = 3
-
 // 使用 refresh_token 更新 access_token
 // error "ETIMEDOUT" 当客户端请求未设超时，同时服务端也没设超时或者超时大于Linux kernel默认的20-second TCP socket connect timeout情况下，则达到20秒没连接成功，则报出"ETIMEDOUT"错误
 // ETIMEDOUT 错误意味着请求花费的时间超过了 Web 服务器配置允许的时间，并且服务器已关闭连接。
-function updateAccesssToken(queryBody, remarks) {
+function updateAccesssToken(queryBody, remarks, param) {
     const errorMessage = [remarks, '更新 access_token 失败']
     return axios(updateAccesssTokenURL, {
         method: 'POST',
@@ -43,19 +40,12 @@ function updateAccesssToken(queryBody, remarks) {
                 errorMessage.push(message)
             }
         } 
-
-        if (e.code && e.code === 'ETIMEDOUT' && updateAccesssTokenErrorReconnect < updateAccesssTokenErrorReconnectMax) {
-
-            updateAccesssTokenErrorReconnect++
-
-            console.log(`updateAccesssTokenErrorReconnect = ${updateAccesssTokenErrorReconnect}`)
-
-            remarks += `, updateAccesssTokenErrorReconnect = ${updateAccesssTokenErrorReconnect}`
-
-            return updateAccesssToken(queryBody, remarks)
-
+        if (e.code && e.code === 'ETIMEDOUT' && param.updateAccesssTokenErrorReconnect < param.updateAccesssTokenErrorReconnectMax) {
+            param.updateAccesssTokenErrorReconnect += 1
+            console.log(`param.updateAccesssTokenErrorReconnect = ${param.updateAccesssTokenErrorReconnect}`)
+            remarks += `, param.updateAccesssTokenErrorReconnect = ${param.updateAccesssTokenErrorReconnect}`
+            return updateAccesssToken(queryBody, remarks, param)
         }
-
         return Promise.reject(errorMessage.join(', '))
     })
 }
@@ -177,10 +167,13 @@ async function getRefreshTokenArray() {
             grant_type: 'refresh_token',
             refresh_token: refreshToken.value || refreshToken
         }
-
+        const param = {
+            updateAccesssTokenErrorReconnect: 0,
+            updateAccesssTokenErrorReconnectMax: 3
+        }
         try {
             const { nick_name, refresh_token, access_token } =
-                await updateAccesssToken(queryBody, remarks)
+                await updateAccesssToken(queryBody, remarks, param)
 
             if (nick_name && nick_name !== remarks)
                 remarks = `${nick_name}(${remarks})`
