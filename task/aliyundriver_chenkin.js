@@ -182,7 +182,7 @@ async function getRefreshTokenArray() {
 
             update_refreshTokenArray.push(refresh_token)
 
-            console.log(sendMessage + (index < refreshTokenArray.length ? '\n' : ''))
+            console.log(sendMessage)
 
             message.push(sendMessage)
         } catch (e) {
