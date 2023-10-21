@@ -194,11 +194,7 @@ async function getRefreshTokenArray() {
     }
 
     if (update_refreshTokenArray.length) {
-
         let createOrUpdateARepositorySecret_msg = '更新 REFRESH_TOKENS ';
-    
-        let secret_value = update_refreshTokenArray.join("&");
-
         try {
             let res = await createOrUpdateARepositorySecret({
                 // owner: OWNER, 
