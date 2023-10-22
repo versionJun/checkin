@@ -43,7 +43,6 @@ function updateAccesssToken(queryBody, remarks, param) {
         if (e.code && e.code === 'ETIMEDOUT' && param.updateAccesssTokenErrorReconnect < param.updateAccesssTokenErrorReconnectMax) {
             param.updateAccesssTokenErrorReconnect += 1
             console.log(`param.updateAccesssTokenErrorReconnect = ${param.updateAccesssTokenErrorReconnect}`)
-            remarks += `, param.updateAccesssTokenErrorReconnect = ${param.updateAccesssTokenErrorReconnect}`
             return updateAccesssToken(queryBody, remarks, param)
         }
         return Promise.reject(errorMessage.join(', '))
@@ -169,7 +168,7 @@ async function getRefreshTokenArray() {
         }
         const param = {
             updateAccesssTokenErrorReconnect: 0,
-            updateAccesssTokenErrorReconnectMax: 3
+            updateAccesssTokenErrorReconnectMax: 6
         }
         try {
             const { nick_name, refresh_token, access_token } =
