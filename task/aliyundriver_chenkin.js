@@ -9,6 +9,7 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
 
+
 const updateAccesssTokenURL = 'https://auth.aliyundrive.com/v2/account/token'
 const signinURL = 'https://member.aliyundrive.com/v1/activity/sign_in_list?_rx-s=mobile'
 const rewardURL = 'https://member.aliyundrive.com/v1/activity/sign_in_reward?_rx-s=mobile'
@@ -50,7 +51,7 @@ function updateAccesssToken(queryBody, remarks, param) {
 }
 
 //签到列表
-function sign_in(access_token, remarks) {
+function sign_in(access_token, remarks, param) {
     const sendMessage = [remarks]
     return axios(signinURL, {
         method: 'POST',
@@ -110,6 +111,11 @@ function sign_in(access_token, remarks) {
         console.log('sign_in > catch > e ' + e)
         console.error(e)
         sendMessage.push(e.message)
+        if (e.code && e.code === 'ETIMEDOUT' && param.signInErrorReconnect < param.signInErrorReconnectMax) {
+            param.signInErrorReconnect += 1
+            console.log(`param.signInErrorReconnect = ${param.signInErrorReconnect}`)
+            return sign_in(access_token, remarks, param)
+        }
         return Promise.reject(sendMessage.join(', '))
     })
 }
@@ -168,7 +174,9 @@ async function getRefreshTokenArray() {
         }
         const param = {
             updateAccesssTokenErrorReconnect: 0,
-            updateAccesssTokenErrorReconnectMax: 6
+            updateAccesssTokenErrorReconnectMax: 6,
+            signInErrorReconnect: 0,
+            signInErrorReconnectMax: 6
         }
         try {
             const { nick_name, refresh_token, access_token } =
@@ -177,7 +185,7 @@ async function getRefreshTokenArray() {
             if (nick_name && nick_name !== remarks)
                 remarks = `${nick_name}(${remarks})`
 
-            const sendMessage = await sign_in(access_token, remarks)
+            const sendMessage = await sign_in(access_token, remarks, param)
 
             update_refreshTokenArray.push(refresh_token)
 
@@ -211,9 +219,11 @@ async function getRefreshTokenArray() {
         }   
     }
 
+    // console.log(message)
+
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
         message: message.join('\n') 
     });
-    
+
 })()
