@@ -9,25 +9,31 @@ const timezone = require('dayjs/plugin/timezone')
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
+const tough = require('tough-cookie')
+const Cookie = tough.Cookie
+
+const BASE_URL = 'https://cdn.v2free.net/'
+const LOGIN_URL = `${BASE_URL}auth/login`
+const USER_URL = `${BASE_URL}user/`
+const CHECKIN_URL = `${BASE_URL}user/checkin`
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
 
 
-function getV2freeCookie() {
+function getUser() {
 
-    let V2FREE_COOKIE = process.env.V2FREE_COOKIE || ''
-    
-    let V2FREE_COOKIE_ARR = []
+    const userJsonStr = process.env.V2FREE_USER || ''
 
-    if (V2FREE_COOKIE.indexOf('&') > -1)
-        V2FREE_COOKIE_ARR = V2FREE_COOKIE.split(/\s*&\s*/).filter(item => item != '')
-    else if (V2FREE_COOKIE)
-        V2FREE_COOKIE_ARR = [V2FREE_COOKIE]
-
-    if (!V2FREE_COOKIE_ARR.length) {
-        console.error("未获取到 V2FREE_COOKIE , 程序终止")
+    if (!userJsonStr) {
+        console.error("未获取到 V2FREE_USER , 程序终止")
         process.exit(0)
     }
 
-    return V2FREE_COOKIE_ARR
+    let userJson = JSON.parse(userJsonStr)
+
+    if (!Array.isArray(userJson))
+        userJson = [userJson]
+
+    return userJson
 }
 
 function getCookieMap(cookie){
@@ -45,13 +51,54 @@ function getCookieMap(cookie){
     return cookieMap
 }
 
-function go_checkin_url(cookie) {
-    return axios('https://cdn.v2free.net/user/checkin', {
+function login(user){
+    return axios(LOGIN_URL, {
         method: 'POST',
         headers: {
-            'Origin': 'https://cdn.v2free.net',
-            'referer': 'https://cdn.v2free.net/user',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'Origin': BASE_URL,
+            'referer': LOGIN_URL,
+            'User-Agent': UA,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data: {
+            email: user.email,
+            passwd: user.passwd
+        }
+    })
+    .then(d => {
+        // console.log(d)
+
+        // console.log(d.data)
+        // { ret: 1, msg: '登录成功' }
+        // { ret: 0, msg: '邮箱不存在' }
+        // { ret: 0, msg: '邮箱或者密码错误' }
+        if (d.data.ret !== 1) 
+            return Promise.reject(`登录失败(by:${JSON.stringify(d.data)})`)
+
+        // console.log(d.headers)
+        let cookies = []
+        if (Array.isArray(d.headers['set-cookie'])){
+            d.headers['set-cookie'].map(item => {
+                cookies.push(Cookie.parse(item).cookieString()) 
+            })
+        }
+        else {
+            cookies = [Cookie.parse(d.headers['set-cookie']).cookieString()]
+        }
+
+        // console.log(cookies)
+
+        return cookies.join(';')
+    })
+}
+
+function go_checkin_url(cookie) {
+    return axios(CHECKIN_URL, {
+        method: 'POST',
+        headers: {
+            // 'Origin': BASE_URL,
+            // 'referer': USER_URL,
+            'User-Agent': UA,
             'Cookie': cookie
         }
     })
@@ -78,10 +125,10 @@ function go_checkin_url(cookie) {
 }
 
 function go_user_url(cookie){
-    return axios('https://cdn.v2free.net/user/', {
+    return axios(USER_URL, {
         method: 'GET',
         headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'User-Agent': UA,
             'Cookie': cookie
         }
     })
@@ -91,6 +138,7 @@ function go_user_url(cookie){
         // const unUsedTraffic = html_dom.window.document.querySelector('.nodename > a[href^="/user/trafficlog"]').textContent.trim()
 
         const $ = cheerio.load(d.data)
+
         const unUsedTraffic = $('.nodename > a[href^="/user/trafficlog"]').text().trim()
 
         return { unUsedTraffic }
@@ -99,17 +147,20 @@ function go_user_url(cookie){
 
 !(async () => {
 
-    const V2FREE_COOKIE_ARR = getV2freeCookie()
+    const userArr = getUser()
 
     let index = 1
     const message = []
-    for (V2FREE_COOKIE of V2FREE_COOKIE_ARR) {
+    for (user of userArr) {
         let account = `账号${index}`
         let remarks = `${account}`
         try {
-            const cookieMap = getCookieMap(V2FREE_COOKIE);
 
-            const checkin_result = await go_checkin_url(V2FREE_COOKIE)
+            const userCookie = await login(user)
+
+            const cookieMap = getCookieMap(userCookie)
+
+            const checkin_result = await go_checkin_url(userCookie)
 
             remarks += `---${checkin_result.msg}`
 
@@ -121,7 +172,7 @@ function go_user_url(cookie){
 
             } else {
 
-                const { unUsedTraffic } = await go_user_url(V2FREE_COOKIE)
+                const { unUsedTraffic } = await go_user_url(userCookie)
 
                 remarks += `---剩余流量:${unUsedTraffic}`
 
