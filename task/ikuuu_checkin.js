@@ -12,7 +12,7 @@ dayjs.tz.setDefault('Asia/Shanghai')
 const tough = require('tough-cookie')
 const Cookie = tough.Cookie
 
-const BASE_URL = "https://ikuuu.art/";
+const BASE_URL = 'https://ikuuu.org/'
 const LOGIN_URL = `${BASE_URL}auth/login`
 const USER_URL = `${BASE_URL}user/`
 const CHECKIN_URL = `${BASE_URL}user/checkin`
@@ -58,7 +58,7 @@ function login(user){
         // { ret: 0, msg: '邮箱不存在' }
         // { ret: 0, msg: '邮箱或者密码错误' }
         if (d.data.ret !== 1) 
-            return Promise.reject(`登录失败(by:${d.data.msg})`)
+            return Promise.reject(`登录失败(by:${JSON.stringify(d.data)})`)
 
         // console.log(d.headers)
         let cookies = []
