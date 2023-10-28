@@ -34,7 +34,7 @@ jobs:
 
       - name: Run main
         env:
-          V2FREE_COOKIE: ${{ secrets.V2FREE_COOKIE }}
+          V2FREE_USER: ${{ secrets.V2FREE_USER }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
         run: |
           node ./task/v2free_checkin.js
