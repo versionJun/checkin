@@ -3,6 +3,7 @@ const axios = require("axios")
 const cheerio = require('cheerio')
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
+const accounts = require('../config/v2free_accounts.js')
 const dayjs = require('dayjs')
 const utc = require('dayjs/plugin/utc')
 const timezone = require('dayjs/plugin/timezone')
@@ -147,11 +148,56 @@ function go_user_url(cookie){
 
 !(async () => {
 
-    const userArr = getUser()
+    // const userArr = getUser()
+    // let index = 1
+    // const message = []
+    // for (user of userArr) {
+    //     let account = `账号${index}`
+    //     let remarks = `${account}`
+    //     try {
 
-    let index = 1
+    //         const userCookie = await login(user)
+
+    //         const cookieMap = getCookieMap(userCookie)
+
+    //         const checkin_result = await go_checkin_url(userCookie)
+
+    //         remarks += `---${checkin_result.msg}`
+
+    //         remarks += `---${cookieMap.get("email")}`
+
+    //         if (checkin_result.ret == 1){
+
+    //             remarks += `---剩余流量:${checkin_result.trafficInfo.unUsedTraffic}`
+
+    //         } else {
+
+    //             const { unUsedTraffic } = await go_user_url(userCookie)
+
+    //             remarks += `---剩余流量:${unUsedTraffic}`
+
+    //         }
+
+    //         console.log(remarks)
+
+    //         message.push(remarks)
+
+    //     } catch (e) {
+    //         console.log(`${account} catch > e = ${e}`);
+    //         console.error(e)
+    //         message.push(remarks + "---" +e)
+    //     }
+    //     index++
+    // }
+
     const message = []
-    for (user of userArr) {
+    for (let index = 0; index < accounts.length; index++) {
+
+        const user = accounts[index]
+
+        if(!user.email || !user.passwd)
+            continue
+
         let account = `账号${index}`
         let remarks = `${account}`
         try {
@@ -187,7 +233,6 @@ function go_user_url(cookie){
             console.error(e)
             message.push(remarks + "---" +e)
         }
-        index++
     }
 
     // console.log(message)
