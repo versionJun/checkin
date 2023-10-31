@@ -6,13 +6,10 @@ on:
     - cron: "45 16 * * *"
   workflow_dispatch:
 
-env:
-  RUN_ENV: ikuuu
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: ${{ env.RUN_ENV }}
+    environment: ikuuu
 
     steps:
       - name: Checkout main 
