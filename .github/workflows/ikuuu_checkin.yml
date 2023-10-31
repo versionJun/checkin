@@ -32,8 +32,9 @@ jobs:
 
       - name: Run main
         env:
-          IKUUU_USER: ${{ secrets.IKUUU_USER }}
+          # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          # ikuuu
           IKUUU_EMAIL_0: ${{secrets.IKUUU_EMAIL_0}}
           IKUUU_PASSWD_0: ${{secrets.IKUUU_PASSWD_0}}
           IKUUU_EMAIL_1: ${{secrets.IKUUU_EMAIL_1}}
