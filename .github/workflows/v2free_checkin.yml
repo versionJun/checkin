@@ -6,12 +6,10 @@ on:
     - cron: "50 16 * * *"
   workflow_dispatch:
 
-env:
-  RUN_ENV: 'prod'
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: v2free
 
     steps:
       - name: Checkout main 
@@ -34,8 +32,20 @@ jobs:
 
       - name: Run main
         env:
-          V2FREE_USER: ${{ secrets.V2FREE_USER }}
+          # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          # v2free
+          V2FREE_EMAIL_0: ${{secrets.V2FREE_EMAIL_0}}
+          V2FREE_PASSWD_0: ${{secrets.V2FREE_PASSWD_0}}
+          V2FREE_EMAIL_1: ${{secrets.V2FREE_EMAIL_1}}
+          V2FREE_PASSWD_1: ${{secrets.V2FREE_PASSWD_1}}
+          V2FREE_EMAIL_2: ${{secrets.V2FREE_EMAIL_2}}
+          V2FREE_PASSWD_2: ${{secrets.V2FREE_PASSWD_2}}
+          V2FREE_EMAIL_3: ${{secrets.V2FREE_EMAIL_3}}
+          V2FREE_PASSWD_3: ${{secrets.V2FREE_PASSWD_3}}
+          V2FREE_EMAIL_4: ${{secrets.V2FREE_EMAIL_4}}
+          V2FREE_PASSWD_4: ${{secrets.V2FREE_PASSWD_4}}
+
         run: |
           node ./task/v2free_checkin.js
 
