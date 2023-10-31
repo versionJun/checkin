@@ -36,6 +36,16 @@ jobs:
         env:
           IKUUU_USER: ${{ secrets.IKUUU_USER }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          IKUUU_EMAIL_0: ${{secrets.IKUUU_EMAIL_0}}
+          IKUUU_PASSWD_0: ${{secrets.IKUUU_PASSWD_0}}
+          IKUUU_EMAIL_1: ${{secrets.IKUUU_EMAIL_1}}
+          IKUUU_PASSWD_1: ${{secrets.IKUUU_PASSWD_1}}
+          IKUUU_EMAIL_2: ${{secrets.IKUUU_EMAIL_2}}
+          IKUUU_PASSWD_2: ${{secrets.IKUUU_PASSWD_2}}
+          IKUUU_EMAIL_3: ${{secrets.IKUUU_EMAIL_3}}
+          IKUUU_PASSWD_3: ${{secrets.IKUUU_PASSWD_3}}
+          IKUUU_EMAIL_4: ${{secrets.IKUUU_EMAIL_4}}
+          IKUUU_PASSWD_4: ${{secrets.IKUUU_PASSWD_4}}
         run: |
           node ./task/ikuuu_checkin.js
 
