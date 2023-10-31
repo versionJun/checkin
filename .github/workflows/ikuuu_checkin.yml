@@ -4,12 +4,14 @@ on:
   schedule:
     # UTC 16点30分(北京时间 0点30分) 30 16 * * *
     - cron: "45 16 * * *"
-  workflow_dispatch:
+
+env:
+  RUN_ENV: ikuuu
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: ikuuu
+    environment: $RUN_ENV
 
     steps:
       - name: Checkout main 
