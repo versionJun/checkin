@@ -5,8 +5,12 @@
 | REFRESH_TOKENS  | [阿里云盘](https://www.aliyundrive.com/drive) refresh_token, 多个账号 `&` 隔开 |
 | GLADOS_COOKIE  | [GLADOS](https://glados.rocks/console) cookie, 多个账号 `&` 隔开 |
 | HIFIN_COOKIE  | [HIFIN](https://www.hifini.com/) cookie, 多个账号 `&` 隔开 |
-| IKUUU_USER  | [IKUUU](https://ikuuu.org/) `[{"email":"","passwd":""},{"email":"","passwd":""}]` |
-| V2FREE_USER  | [V2FREE](https://cdn.v2free.net/user) `[{"email":"","passwd":""},{"email":"","passwd":""}]` |
+
+| 目标          | 配置文件                                             |
+| ------------- | ------------------------------------------------ |
+| [IKUUU](https://ikuuu.org/)  | [ikuuu_accounts.js](./config/ikuuu_accounts.js)  |
+| [V2FREE](https://cdn.v2free.net/user)  | [v2free_accounts.js](./config/v2free_accounts.js) |
+| [CLOUD189](https://cloud.189.cn/)  |  [cloud189_accounts.js](./config/cloud189_accounts.js) |
 
 > **获取 refresh_token 的方法**
 >
