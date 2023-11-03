@@ -103,7 +103,7 @@ function go_my_url(cookie){
 
             remarks += `---剩余金币:${species}`
 
-            console.log(remarks)
+            // console.log(remarks)
 
             message.push(remarks)
 
