@@ -31,15 +31,16 @@ async function sent_message_by_pushplus(params) {
 
     try {
 
-        let res = await axios.post("http://www.pushplus.plus/send", data);
+        let res = await axios.post("http://www.pushplus.plus/send", data)
         
-        console.log(`发送pushplus res=${JSON.stringify(res.data)}`);
+        console.log(`发送pushplus res=${JSON.stringify(res.data)}`)
 
         return res.data.code
 
     } catch (e) {
-        console.log(`发送pushplus失败:${e}`);
-        console.error(e);
+        console.log(`发送pushplus失败:${e}`)
+        console.log(`发送pushplus失败->params=${JSON.stringify(params)}`)
+        console.error(e)
     }
 }
 
@@ -79,6 +80,7 @@ async function sent_message_by_sct(params) {
 
     } catch (e) {
         console.log(`发送pserver酱失败:${e}`)
+        console.log(`发送pserver酱失败->params=${JSON.stringify(params)}`)
         console.error(e)
     }
 
