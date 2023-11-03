@@ -224,7 +224,7 @@ function go_user_url(cookie){
 
             }
 
-            console.log(remarks)
+            // console.log(remarks)
 
             message.push(remarks)
 
