@@ -98,7 +98,7 @@ function getGladosCookie() {
 
             remarks += `---${email}---结果:${msg}---天数:${leftdays}---点数:${balance}`
 
-            console.log(remarks)
+            // console.log(remarks)
 
             message.push(remarks)
 
