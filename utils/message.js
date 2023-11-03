@@ -35,6 +35,9 @@ async function sent_message_by_pushplus(params) {
         
         console.log(`发送pushplus res=${JSON.stringify(res.data)}`)
 
+        if (res.data.code !== 200)
+            return Promise.reject(`${res.data.msg}`) 
+
         return res.data.code
 
     } catch (e) {
