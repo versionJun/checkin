@@ -189,7 +189,7 @@ async function getRefreshTokenArray() {
 
             update_refreshTokenArray.push(refresh_token)
 
-            console.log(sendMessage)
+            // console.log(sendMessage)
 
             message.push(sendMessage)
         } catch (e) {
@@ -214,7 +214,7 @@ async function getRefreshTokenArray() {
             createOrUpdateARepositorySecret_msg += '失败 e = ' + e
             console.error(e);
         } finally {
-            console.log(createOrUpdateARepositorySecret_msg);
+            // console.log(createOrUpdateARepositorySecret_msg);
             message.push(createOrUpdateARepositorySecret_msg)
         }   
     }
