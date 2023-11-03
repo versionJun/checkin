@@ -201,7 +201,7 @@ function go_user_url(cookie) {
 
             remarks += `---${checkin_result.msg}---${cookieMap.get("email")}---剩余流量:${unUsedTraffic}`
 
-            console.log(remarks)
+            // console.log(remarks)
 
             message.push(remarks)
 
