@@ -231,25 +231,19 @@ async function goDrawPrizeMarketDetails(cookieJar, msg){
         const user = accounts[index]
         if(!user.username || !user.password)
             continue
-        const msg = [`账号${index}`]
+        const account = `账号${index}`
+        const msg = [`${account}`]
         try {
             const encryptKey = await goEncryptConf()
-    
             const query = await goRedirect()
-    
             const formData = await goAppConf(user.username, user.password, encryptKey, query)
-    
             const toUrl = await goLoginSubmit(formData)
-
             const cookieJar = new CookieJar()
-
             await goToUrl(toUrl, cookieJar)
-            
             await goUserSign(cookieJar, msg)
-    
             await goDrawPrizeMarketDetails(cookieJar, msg)
-        
         } catch(error) {
+            console.log(`${account} catch > error = ${error}`);
             console.error(error)
             msg.push(error)
         } finally {
