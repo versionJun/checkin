@@ -20,22 +20,22 @@ const CHECKIN_URL = `${BASE_URL}user/checkin`
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
 
 
-function getUser() {
+// function getUser() {
 
-    const userJsonStr = process.env.V2FREE_USER || ''
+//     const userJsonStr = process.env.V2FREE_USER || ''
 
-    if (!userJsonStr) {
-        console.error("未获取到 V2FREE_USER , 程序终止")
-        process.exit(0)
-    }
+//     if (!userJsonStr) {
+//         console.error("未获取到 V2FREE_USER , 程序终止")
+//         process.exit(0)
+//     }
 
-    let userJson = JSON.parse(userJsonStr)
+//     let userJson = JSON.parse(userJsonStr)
 
-    if (!Array.isArray(userJson))
-        userJson = [userJson]
+//     if (!Array.isArray(userJson))
+//         userJson = [userJson]
 
-    return userJson
-}
+//     return userJson
+// }
 
 function getCookieMap(cookie){
 
@@ -148,90 +148,31 @@ function go_user_url(cookie){
 
 !(async () => {
 
-    // const userArr = getUser()
-    // let index = 1
-    // const message = []
-    // for (user of userArr) {
-    //     let account = `账号${index}`
-    //     let remarks = `${account}`
-    //     try {
-
-    //         const userCookie = await login(user)
-
-    //         const cookieMap = getCookieMap(userCookie)
-
-    //         const checkin_result = await go_checkin_url(userCookie)
-
-    //         remarks += `---${checkin_result.msg}`
-
-    //         remarks += `---${cookieMap.get("email")}`
-
-    //         if (checkin_result.ret == 1){
-
-    //             remarks += `---剩余流量:${checkin_result.trafficInfo.unUsedTraffic}`
-
-    //         } else {
-
-    //             const { unUsedTraffic } = await go_user_url(userCookie)
-
-    //             remarks += `---剩余流量:${unUsedTraffic}`
-
-    //         }
-
-    //         console.log(remarks)
-
-    //         message.push(remarks)
-
-    //     } catch (e) {
-    //         console.log(`${account} catch > e = ${e}`);
-    //         console.error(e)
-    //         message.push(remarks + "---" +e)
-    //     }
-    //     index++
-    // }
-
     const message = []
     for (let index = 0; index < accounts.length; index++) {
-
         const user = accounts[index]
-
         if(!user.email || !user.passwd)
             continue
-
-        let account = `账号${index}`
-        let remarks = `${account}`
+        const account = `账号${index}`
+        const msg = [`${account}`]
         try {
-
             const userCookie = await login(user)
-
             const cookieMap = getCookieMap(userCookie)
-
             const checkin_result = await go_checkin_url(userCookie)
-
-            remarks += `---${checkin_result.msg}`
-
-            remarks += `---${cookieMap.get("email")}`
-
-            if (checkin_result.ret == 1){
-
-                remarks += `---剩余流量:${checkin_result.trafficInfo.unUsedTraffic}`
-
+            msg.push(`${checkin_result.msg}`)
+            msg.push(`${cookieMap.get("email")}`)
+            if (checkin_result.ret === 1){
+                msg.push(`剩余流量:${checkin_result.trafficInfo.unUsedTraffic}`)
             } else {
-
                 const { unUsedTraffic } = await go_user_url(userCookie)
-
-                remarks += `---剩余流量:${unUsedTraffic}`
-
+                msg.push(`剩余流量:${unUsedTraffic}`)
             }
-
-            // console.log(remarks)
-
-            message.push(remarks)
-
-        } catch (e) {
-            console.log(`${account} catch > e = ${e}`);
-            console.error(e)
-            message.push(remarks + "---" +e)
+        } catch (error) {
+            console.log(`${account} catch > error = ${error}`);
+            console.error(error)
+            msg.push(error)
+        } finally {
+            message.push(msg.join('---'))
         }
     }
 
