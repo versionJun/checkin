@@ -50,6 +50,53 @@ const DRAWPRIZEMARKETDETAILS_URL = [
     `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_2022_FLDFS_KJ&activityId=ACT_SIGNIN`,
 ]
 
+//请求超时时间（5秒后还未接收到数据，就需要再次发送请求）
+axios.defaults.timeout = 5 * 1000 
+
+//设置全局重试请求次数（最多重试几次请求）
+axios.defaults.retry = 3
+
+//设置全局重试请求间隔
+axios.defaults.retryDelay = 1000
+
+//响应拦截器  
+axios.interceptors.response.use((res) => {
+
+        return Promise.resolve(res);
+
+    }, (error) => {
+        //console.log(error);
+        
+        const axiosConfig = error.config
+        if (!axiosConfig || !axiosConfig.retry) 
+            return Promise.reject(error)
+
+        // __retryCount用来记录当前是第几次发送请求
+        axiosConfig.__retryCount = axiosConfig.__retryCount || 0
+
+        // 如果当前发送的请求大于等于设置好的请求次数时，不再发送请求
+        if (axiosConfig.__retryCount >= axiosConfig.retry) 
+            return Promise.reject(error)
+
+        // 记录请求次数+1
+        axiosConfig.__retryCount += 1
+                        
+        // 设置请求间隔 在发送下一次请求之前停留一段时间，时间为重试请求间隔
+        const backoff = new Promise(function (resolve) {
+            const duration =  axiosConfig.retryDelay || 1
+            console.log(`${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}; __retryCount=${axiosConfig.__retryCount}; duration=${duration};`)
+            setTimeout(function () {
+                resolve()
+            }, duration)
+        })
+
+        // 再次发送请求
+        return backoff.then(function () {
+            return axios(axiosConfig);
+        })
+    }
+)
+
 function goEncryptConf(){
     if (config.pubKey)
         return config.pubKey
