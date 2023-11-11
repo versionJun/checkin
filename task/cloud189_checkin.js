@@ -38,7 +38,7 @@ const REDIRECT_URL = 'https://cloud.189.cn/api/portal/loginUrl.action?redirectUR
 const APPCONF_URL = 'https://open.e.189.cn/api/logbox/oauth2/appConf.do'
 
 // 获取登录地址,跳转到登录页
-const LOGINSUBMIT = 'https://open.e.189.cn/api/logbox/oauth2/loginSubmit.do'
+const LOGINSUBMIT_URL = 'https://open.e.189.cn/api/logbox/oauth2/loginSubmit.do'
 
 // 签到
 const USERSIGN_URL = `https://cloud.189.cn/mkt/userSign.action?rand=${new Date().getTime()}&clientType=TELEANDROID&version=${config.version}&model=${config.model}`
@@ -176,7 +176,7 @@ function goAppConf(username, password, encryptKey, query) {
 }
 
 function goLoginSubmit(formData) {
-    return axios(LOGINSUBMIT, {
+    return axios(LOGINSUBMIT_URL, {
         method: 'POST',
         data: {
             appKey: 'cloud',
