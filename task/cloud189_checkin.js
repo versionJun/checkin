@@ -18,6 +18,7 @@ const config = {
     clientId: '538135150693412',
     model: 'KB2000',
     version: '9.0.6',
+    pre: '{NRP}',
     pubKey: 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCZLyV4gHNDUGJMZoOcYauxmNEsKrc0TlLeBEVVIIQNzG4WqjimceOj5R9ETwDeeSN3yejAKLGHgx83lyy2wBjvnbfm/nLObyWwQD/09CmpZdxoFYCH6rdDjRpwZOZ2nXSZpgkZXoOBkfNXNxnN74aXtho2dqBynTw3NFTWyQl8BQIDAQAB', 
 }
 
@@ -28,7 +29,7 @@ const config_headers = {
     Host: 'cloud.189.cn',
 }
 
-// 获取公钥 
+// 获取公钥 pre pubKey
 const ENCRYPTCONF_URL = 'https://open.e.189.cn/api/logbox/config/encryptConf.do'
 
 // 获取登录参数 lt reqId
@@ -98,8 +99,11 @@ axios.interceptors.response.use((res) => {
 )
 
 function goEncryptConf(){
-    if (config.pubKey)
-        return config.pubKey
+    if (config.pre && config.pubKey)
+        return { 
+            pre: config.pre, 
+            pubKey: config.pubKey
+        }
     return axios(ENCRYPTCONF_URL, {
         method: 'POST',
         data: {
@@ -110,11 +114,12 @@ function goEncryptConf(){
         console.log(res.data)
         if(res.data.result !== 0)
             return Promise.reject(res.data)
-        return res.data.data.pubKey
+        return res.data.data
     })
     .catch(error => {
         console.error(error)
         return Promise.reject(`goEncryptConf->${error}`)
+        // return Promise.reject(`${arguments.callee.name}->${error}`)
     })
 }
 
@@ -128,13 +133,12 @@ function goRedirect() {
         return query
     })
     .catch(error => {
-        console.error(e)
+        console.error(error)
         return Promise.reject(`goRedirect->${error}`)
     })
-
 }
 
-function goAppConf(username, password, encryptKey, query) {
+function goAppConf(username, password, pre, pubKey, query) {
     return axios(APPCONF_URL, {
         method: 'POST',
         data: {
@@ -153,7 +157,7 @@ function goAppConf(username, password, encryptKey, query) {
         if(res.data.result !== '0')
             return Promise.reject(`${res.data.msg}`)
 
-        const keyData = `-----BEGIN PUBLIC KEY-----\n${encryptKey}\n-----END PUBLIC KEY-----`;
+        const keyData = `-----BEGIN PUBLIC KEY-----\n${pubKey}\n-----END PUBLIC KEY-----`;
         const jsencrypt = new JSEncrypt()
         jsencrypt.setPublicKey(keyData)
         const usernameEncrypt = Buffer.from(jsencrypt.encrypt(username), 'base64').toString('hex')
@@ -163,8 +167,8 @@ function goAppConf(username, password, encryptKey, query) {
             paramId: res.data.data.paramId,
             lt: `${query.lt}`,
             reqId: `${query.reqId}`,
-            userName: `{NRP}${usernameEncrypt}`,
-            password: `{NRP}${passwordEncrypt}`
+            userName: `${pre}${usernameEncrypt}`,
+            password: `${pre}${passwordEncrypt}`
         }
 
         return formData
@@ -172,7 +176,7 @@ function goAppConf(username, password, encryptKey, query) {
     .catch(error => {
         console.error(error)
         return Promise.reject(`goAppConf->${error}`)
-    })    
+    })
 }
 
 function goLoginSubmit(formData) {
@@ -203,7 +207,6 @@ function goLoginSubmit(formData) {
         },
     })
     .then(res => {
-
         if(res.data.result !== 0)
             return Promise.reject(`${res.data.msg}`)
 
@@ -213,6 +216,7 @@ function goLoginSubmit(formData) {
         console.error(error)
         return Promise.reject(`goLoginSubmit->${error}`)
     })
+
 }
 
 function goToUrl(toUrl, cookieJar){
@@ -222,15 +226,12 @@ function goToUrl(toUrl, cookieJar){
         jar: cookieJar
     })
     .then(res => {
-
-        // console.log(res)
-
+        
     })
     .catch(error => {
         console.error(error)
         return Promise.reject(`goToUrl->${error}`)
     })
-
 }
 
 function goUserSign(cookieJar, msg){
@@ -238,10 +239,8 @@ function goUserSign(cookieJar, msg){
         method: 'GET',
         jar: cookieJar
     })
-    .then(res => {
-      
+    .then(res => {        
         msg.push(`${res.data.isSign ? '已经签到' : '签到成功'},获得${res.data.netdiskBonus}M空间`)
-      
     })
     .catch(error => {
         console.error(error)
@@ -256,12 +255,10 @@ async function goDrawPrizeMarketDetails(cookieJar, msg){
             jar: cookieJar
         })
         .then(res => {
-            
             if (res.data.errorCode === 'User_Not_Chance') 
                 msg.push(`第${index+1}次抽奖失败,次数不足`)
             else
                 msg.push(`第${index+1}次抽奖成功,抽奖获得${res.data.prizeName}`)
-
         })
         .catch(error => {
             console.error(error)
@@ -269,7 +266,6 @@ async function goDrawPrizeMarketDetails(cookieJar, msg){
         })
     }
 }
-
 
 !(async () => {
 
@@ -281,9 +277,9 @@ async function goDrawPrizeMarketDetails(cookieJar, msg){
         const account = `账号${index}`
         const msg = [`${account}`]
         try {
-            const encryptKey = await goEncryptConf()
+            const { pre, pubKey } = await goEncryptConf()
             const query = await goRedirect()
-            const formData = await goAppConf(user.username, user.password, encryptKey, query)
+            const formData = await goAppConf(user.username, user.password, pre, pubKey, query)
             const toUrl = await goLoginSubmit(formData)
             const cookieJar = new CookieJar()
             await goToUrl(toUrl, cookieJar)
