@@ -29,7 +29,7 @@ const config_headers = {
     Host: 'cloud.189.cn',
 }
 
-// 获取公钥 pre pubKey
+// 获取加密参数 pre pubKey
 const ENCRYPTCONF_URL = 'https://open.e.189.cn/api/logbox/config/encryptConf.do'
 
 // 获取登录参数 lt reqId
