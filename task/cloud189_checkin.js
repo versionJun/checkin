@@ -281,7 +281,6 @@ async function goDrawPrizeMarketDetails(cookieJar){
             logger.addContext("user", `账号${index}`)
             const { pre, pubKey } = await goEncryptConf()
             const query = await goLoginUrl()
-            // const query = {}
             const formData = await goAppConf(user.username, user.password, pre, pubKey, query)
             const toUrl = await goLoginSubmit(formData)
             const cookieJar = new CookieJar()
