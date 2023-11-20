@@ -41,7 +41,7 @@ log4js.configure({
                 "stdout"
             ],
             level: "trace",
-            enableCallStack: true
+            // enableCallStack: true
         },
     },
 });
