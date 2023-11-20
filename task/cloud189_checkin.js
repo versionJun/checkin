@@ -82,7 +82,7 @@ axios.interceptors.response.use((res) => {
         // 设置请求间隔 在发送下一次请求之前停留一段时间，时间为重试请求间隔
         const backoff = new Promise(function (resolve) {
             const duration =  axiosConfig.retryDelay || 1
-            logger.error(`__retryCount=${axiosConfig.__retryCount}; duration=${duration}; ${axiosConfig.method}=>${axiosConfig.url}; ${axiosConfig.data ? 'data=' + axiosConfig.data : ''}`)
+            logger.error(`__retryCount=${axiosConfig.__retryCount}; duration=${duration}; ${axiosConfig.method}=>${axiosConfig.url};${axiosConfig.data ? ` data=${axiosConfig.data};` : ''} Error.cause=${JSON.stringify(error.cause)};`)
             setTimeout(function () {
                 resolve()
             }, duration)
