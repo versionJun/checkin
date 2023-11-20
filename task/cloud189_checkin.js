@@ -5,14 +5,11 @@ const JSEncrypt = require('node-jsencrypt')
 const { CookieJar } = require('tough-cookie')
 const { wrapper } = require('axios-cookiejar-support')
 wrapper(axios)
-const { sent_message_by_pushplus } = require('../utils/message.js')
 const accounts = require('../config/cloud189_accounts.js')
-const dayjs = require('dayjs')
-const utc = require('dayjs/plugin/utc')
-const timezone = require('dayjs/plugin/timezone')
-dayjs.extend(utc)
-dayjs.extend(timezone)
-dayjs.tz.setDefault('Asia/Shanghai')
+const { sent_message_by_pushplus } = require('../utils/message.js')
+const { dayjs } = require('../utils/dayjs.js')
+const { logger, getLog4jsStr } = require('../utils/log4js')
+
 
 const config = {
     clientId: '538135150693412',
@@ -33,7 +30,7 @@ const config_headers = {
 const ENCRYPTCONF_URL = 'https://open.e.189.cn/api/logbox/config/encryptConf.do'
 
 // 获取登录参数 lt reqId
-const REDIRECT_URL = 'https://cloud.189.cn/api/portal/loginUrl.action?redirectURL=https://cloud.189.cn/web/redirect.html?returnURL=/main.action'
+const LOGINURL_URL = 'https://cloud.189.cn/api/portal/loginUrl.action?redirectURL=https://cloud.189.cn/web/redirect.html?returnURL=/main.action'
 
 // 获取登录参数 returnUrl paramId
 const APPCONF_URL = 'https://open.e.189.cn/api/logbox/oauth2/appConf.do'
@@ -66,9 +63,9 @@ axios.interceptors.response.use((res) => {
         return Promise.resolve(res);
 
     }, (error) => {
-        //console.log(error);
-        
+
         const axiosConfig = error.config
+
         if (!axiosConfig || !axiosConfig.retry) 
             return Promise.reject(error)
 
@@ -85,7 +82,7 @@ axios.interceptors.response.use((res) => {
         // 设置请求间隔 在发送下一次请求之前停留一段时间，时间为重试请求间隔
         const backoff = new Promise(function (resolve) {
             const duration =  axiosConfig.retryDelay || 1
-            console.log(`${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}; __retryCount=${axiosConfig.__retryCount}; duration=${duration}; ${axiosConfig.method}=>${axiosConfig.url}; ${axiosConfig.data ? 'data=' + axiosConfig.data : ''}`)
+            logger.error(`__retryCount=${axiosConfig.__retryCount}; duration=${duration}; ${axiosConfig.method}=>${axiosConfig.url}; ${axiosConfig.data ? 'data=' + axiosConfig.data : ''}`)
             setTimeout(function () {
                 resolve()
             }, duration)
@@ -93,7 +90,7 @@ axios.interceptors.response.use((res) => {
 
         // 再次发送请求
         return backoff.then(function () {
-            return axios(axiosConfig);
+            return axios(axiosConfig)
         })
     }
 )
@@ -123,8 +120,8 @@ function goEncryptConf(){
     })
 }
 
-function goRedirect() {
-    return axios(REDIRECT_URL, {
+function goLoginUrl() {
+    return axios(LOGINURL_URL, {
         method: 'GET'
     })
     .then(res => {
@@ -154,6 +151,7 @@ function goAppConf(username, password, pre, pubKey, query) {
         }
     })
     .then(res => {
+
         if(res.data.result !== '0')
             return Promise.reject(`${res.data.msg}`)
 
@@ -207,6 +205,7 @@ function goLoginSubmit(formData) {
         },
     })
     .then(res => {
+
         if(res.data.result !== 0)
             return Promise.reject(`${res.data.msg}`)
 
@@ -226,7 +225,7 @@ function goToUrl(toUrl, cookieJar){
         jar: cookieJar
     })
     .then(res => {
-        
+
     })
     .catch(error => {
         console.error(error)
@@ -234,13 +233,15 @@ function goToUrl(toUrl, cookieJar){
     })
 }
 
-function goUserSign(cookieJar, msg){
+function goUserSign(cookieJar){
     return axios(USERSIGN_URL, {
         method: 'GET',
         jar: cookieJar
     })
-    .then(res => {        
-        msg.push(`${res.data.isSign ? '已经签到' : '签到成功'},获得${res.data.netdiskBonus}M空间`)
+    .then(res => {
+        
+        logger.info(`${res.data.isSign ? '已经签到' : '签到成功'},获得${res.data.netdiskBonus}M空间`)
+
     })
     .catch(error => {
         console.error(error)
@@ -248,17 +249,19 @@ function goUserSign(cookieJar, msg){
     })
 }
 
-async function goDrawPrizeMarketDetails(cookieJar, msg){
+async function goDrawPrizeMarketDetails(cookieJar){
     for (let index = 0; index < DRAWPRIZEMARKETDETAILS_URL.length; index++) {
         await axios(DRAWPRIZEMARKETDETAILS_URL[index], {
             method: 'GET',
             jar: cookieJar
         })
         .then(res => {
+            
             if (res.data.errorCode === 'User_Not_Chance') 
-                msg.push(`第${index+1}次抽奖失败,次数不足`)
+                logger.info(`第${index+1}次抽奖失败,次数不足`)
             else
-                msg.push(`第${index+1}次抽奖成功,抽奖获得${res.data.prizeName}`)
+                logger.info(`第${index+1}次抽奖成功,抽奖获得${res.data.prizeName}`)
+
         })
         .catch(error => {
             console.error(error)
@@ -267,37 +270,36 @@ async function goDrawPrizeMarketDetails(cookieJar, msg){
     }
 }
 
+
 !(async () => {
 
-    const message = []
     for (let index = 0; index < accounts.length; index++) {
         const user = accounts[index]
         if(!user.username || !user.password)
-            continue
-        const account = `账号${index}`
-        const msg = [`${account}`]
+            continue        
         try {
+            logger.addContext("user", `账号${index}`)
             const { pre, pubKey } = await goEncryptConf()
-            const query = await goRedirect()
+            const query = await goLoginUrl()
+            // const query = {}
             const formData = await goAppConf(user.username, user.password, pre, pubKey, query)
             const toUrl = await goLoginSubmit(formData)
             const cookieJar = new CookieJar()
             await goToUrl(toUrl, cookieJar)
-            await goUserSign(cookieJar, msg)
-            await goDrawPrizeMarketDetails(cookieJar, msg)
+            await goUserSign(cookieJar)
+            await goDrawPrizeMarketDetails(cookieJar)
         } catch(error) {
-            console.log(`${account} catch > error = ${error}`);
             console.error(error)
-            msg.push(error)
+            logger.error(error)
         } finally {
-            message.push(msg.join('---'))
+            logger.removeContext("user")
         }
     }
     
-    // console.log(message)
+    // console.log(`getLog4jsStr()\n${getLog4jsStr()}`)
 
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: message.join('\n') 
+        message: getLog4jsStr() 
     });
 })()
