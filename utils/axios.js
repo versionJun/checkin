@@ -38,13 +38,14 @@ axios.interceptors.response.use((res) => {
                         
         // 设置请求间隔 在发送下一次请求之前停留一段时间，时间为重试请求间隔
         const backoff = new Promise(function (resolve) {
+            console.error(error)
             const retryDelay =  axiosConfig.retryDelay || 1
             const errorInfo = []
             errorInfo.push(`__retryCount=${axiosConfig.__retryCount}`)
             errorInfo.push(`retryDelay=${retryDelay}`)
             errorInfo.push(`${axiosConfig.method}=>${axiosConfig.url}`)
-            if (axiosConfig.params) errorInfo.push(`params=${axiosConfig.params}`)
-            if (axiosConfig.data) errorInfo.push(`data=${axiosConfig.data}`)
+            // if (axiosConfig.params) errorInfo.push(`params=${axiosConfig.params}`)
+            // if (axiosConfig.data) errorInfo.push(`data=${axiosConfig.data}`)
             if (error.cause) errorInfo.push(`Error.cause=${JSON.stringify(error.cause)}`)
             logger.error(errorInfo.join('; '))
             setTimeout(function () {
