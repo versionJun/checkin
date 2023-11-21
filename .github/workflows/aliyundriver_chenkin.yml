@@ -6,9 +6,6 @@ on:
     - cron: "30 16 * * *"
   workflow_dispatch:
 
-env:
-  RUN_ENV: 'prod'
-
 jobs:
   build:
     runs-on: ubuntu-latest
