@@ -1,142 +1,126 @@
-const axios = require('axios')
+const axios = require('../utils/axios.js')
 const path = require('path')
 const { createOrUpdateARepositorySecret } = require('../utils/github.js')
 const { sent_message_by_pushplus } = require('../utils/message.js')
-const dayjs = require('dayjs')
-const utc = require('dayjs/plugin/utc')
-const timezone = require('dayjs/plugin/timezone')
-dayjs.extend(utc)
-dayjs.extend(timezone)
-dayjs.tz.setDefault('Asia/Shanghai')
+const { dayjs } = require('../utils/dayjs.js')
+const { logger, getLog4jsStr } = require('../utils/log4js')
 
-
-const updateAccesssTokenURL = 'https://auth.aliyundrive.com/v2/account/token'
-const signinURL = 'https://member.aliyundrive.com/v1/activity/sign_in_list?_rx-s=mobile'
-const rewardURL = 'https://member.aliyundrive.com/v1/activity/sign_in_reward?_rx-s=mobile'
+// 刷新令牌 
+const TOKEN_URL = 'https://auth.aliyundrive.com/v2/account/token'
+// 签到接口
+const SIGNINLIST_URL = 'https://member.aliyundrive.com/v1/activity/sign_in_list'
+// 兑换奖励接口
+const SIGNINREWARD_URL = 'https://member.aliyundrive.com/v1/activity/sign_in_reward'
 
 // 使用 refresh_token 更新 access_token
-// error "ETIMEDOUT" 当客户端请求未设超时，同时服务端也没设超时或者超时大于Linux kernel默认的20-second TCP socket connect timeout情况下，则达到20秒没连接成功，则报出"ETIMEDOUT"错误
-// ETIMEDOUT 错误意味着请求花费的时间超过了 Web 服务器配置允许的时间，并且服务器已关闭连接。
-function updateAccesssToken(queryBody, remarks, param) {
-    const errorMessage = [remarks, '更新 access_token 失败']
-    return axios(updateAccesssTokenURL, {
+function goToken(refresh_token) {
+    return axios(TOKEN_URL, {
         method: 'POST',
-        data: queryBody,
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(d => d.data)
-    .catch(e => {
-        console.error(e)
-        errorMessage.push(e.message)
-        console.log(`updateAccesssToken > catch > e = ${e.message}`)
-        if (e.response && e.response.data) {
-            console.log(`updateAccesssToken > catch > e.response.data = ${JSON.stringify(e.response.data)}`);
-            const { code, message } = e.response.data
-            if (
-                code === 'RefreshTokenExpired' ||
-                code === 'InvalidParameter.RefreshToken'
-            ) {
-                errorMessage.push('refresh_token 已过期或无效')
-            } else {
-                errorMessage.push(message)
-            }
-        } 
-        if (e.code && e.code === 'ETIMEDOUT' && param.updateAccesssTokenErrorReconnect < param.updateAccesssTokenErrorReconnectMax) {
-            param.updateAccesssTokenErrorReconnect += 1
-            console.log(`param.updateAccesssTokenErrorReconnect = ${param.updateAccesssTokenErrorReconnect}`)
-            return updateAccesssToken(queryBody, remarks, param)
+        data: {
+            grant_type: 'refresh_token',
+            refresh_token: refresh_token
+        },
+        headers: { 
+            'Content-Type': 'application/json' 
         }
-        return Promise.reject(errorMessage.join(', '))
+    })
+    .then(res => {
+
+        return res.data
+    })
+    .catch(error => {
+        const errorMsg = ['goToken->']
+        if (error.response && error.response.data) {
+            logger.warn(`error.response.data=${JSON.stringify(error.response.data)}`)
+            const { code, message } = error.response.data
+            if (code === 'RefreshTokenExpired' || code === 'InvalidParameter.RefreshToken') {
+                errorMsg.push('refresh_token已过期或无效')
+            } else {
+                errorMsg.push(`${message}`)
+            }
+        } else {
+            errorMsg.push(`${error}`)
+        }
+        return Promise.reject(errorMsg.join(''))
     })
 }
 
 //签到列表
-function sign_in(access_token, remarks, param) {
-    const sendMessage = [remarks]
-    return axios(signinURL, {
+function goSignInList(access_token) {
+    return axios(SIGNINLIST_URL, {
         method: 'POST',
         data: {
             isReward: false
+        },
+        params: {
+            '_rx-s': 'mobile'
         },
         headers: {
             Authorization: access_token,
             'Content-Type': 'application/json'
         }
     })
-    .then(d => d.data)
-    .then(async json => {
-        if (!json.success) {
-                sendMessage.push('签到失败(01)', json.message)
-                return Promise.reject(sendMessage.join(', '))
-        }
+    .then(async res => {
 
-        sendMessage.push('签到成功')
+        if (!res.data.success) return Promise.reject(res.data.message)
 
-
-        const { signInLogs, signInCount } = json.result
+        const { signInLogs, signInCount } = res.data.result
+        
         const currentSignInfo = signInLogs[signInCount - 1] // 当天签到信息
+        
+        logger.info(`签到成功,本月累计签到${signInCount}天`)
 
-        sendMessage.push(`本月累计签到 ${signInCount} 天`)
+        if (currentSignInfo.isReward) {
+            logger.info( `今日(${currentSignInfo.calendarMonth}${currentSignInfo.calendarDay}号)签到获得:${currentSignInfo.reward.name || ''}${currentSignInfo.reward.description || '' }`)
+        }
 
         // 未领取奖励列表
         const rewards = signInLogs.filter(
             v => v.status === 'normal' && !v.isReward
         )
-
         if (rewards.length) {
             for await (reward of rewards) {
-            const signInDay = reward.day
+                const signInDay = reward.day
                 try {
-                    const rewardInfo = await getReward(access_token, signInDay)
-                    sendMessage.push(
-                        `第${signInDay}天奖励领取成功: 获得${rewardInfo.name || ''}${
-                            rewardInfo.description || ''
-                        }`
-                    )
+                    const rewardInfo = await goSginInReward(access_token, signInDay)
+                    logger.info(`第${signInDay}天奖励领取成功: 获得${rewardInfo.name || ''}${rewardInfo.description || ''}`)
                 } catch (e) {
-                        sendMessage.push(`第${signInDay}天奖励领取失败:`, e)
+                    logger.error(`第${signInDay}天奖励领取失败:`, e)
                 }
             }
-        } else if (currentSignInfo.isReward) {
-            sendMessage.push(
-                `今日签到获得${currentSignInfo.reward.name || ''}${
-                    currentSignInfo.reward.description || ''
-                }`
-            )
         }
 
-        return sendMessage.join(', ')
     })
-    .catch(e => {
-        console.log('sign_in > catch > e ' + e)
-        console.error(e)
-        sendMessage.push(e.message)
-        if (e.code && e.code === 'ETIMEDOUT' && param.signInErrorReconnect < param.signInErrorReconnectMax) {
-            param.signInErrorReconnect += 1
-            console.log(`param.signInErrorReconnect = ${param.signInErrorReconnect}`)
-            return sign_in(access_token, remarks, param)
-        }
-        return Promise.reject(sendMessage.join(', '))
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goSignInList->${error}`)
     })
 }
 
 // 领取奖励
-function getReward(access_token, signInDay) {
-    return axios(rewardURL, {
+function goSginInReward(access_token, signInDay) {
+    return axios(SIGNINREWARD_URL, {
         method: 'POST',
-        data: { signInDay },
+        data: { 
+            'signInDay': signInDay
+        },
+        params: {
+            '_rx-s': 'mobile'
+        },
         headers: {
             authorization: access_token,
             'Content-Type': 'application/json'
         }
     })
-    .then(d => d.data)
-    .then(json => {
-      if (!json.success) {
-        return Promise.reject(json.message)
-      }
-
-      return json.result
+    .then(res => {
+        if (!res.data.success) {
+            return Promise.reject(res.data.message)
+        }
+        return res.data.result
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goSginInReward->${error}`)
     })
 }
 
@@ -162,68 +146,44 @@ async function getRefreshTokenArray() {
 !(async () => {
 
     const refreshTokenArray = await getRefreshTokenArray()
-
-    const message = []
-    let index = 1
     const update_refreshTokenArray = []
-    for await (refreshToken of refreshTokenArray) {
-        let remarks = refreshToken.remarks || `账号${index}`
-        const queryBody = {
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken.value || refreshToken
-        }
-        const param = {
-            updateAccesssTokenErrorReconnect: 0,
-            updateAccesssTokenErrorReconnectMax: 6,
-            signInErrorReconnect: 0,
-            signInErrorReconnectMax: 6
-        }
+    for (let index = 0; index < refreshTokenArray.length; index++) {
+        const refresh_token = refreshTokenArray[index]
+        if (!refresh_token) continue
         try {
-            const { nick_name, refresh_token, access_token } =
-                await updateAccesssToken(queryBody, remarks, param)
-
-            if (nick_name && nick_name !== remarks)
-                remarks = `${nick_name}(${remarks})`
-
-            const sendMessage = await sign_in(access_token, remarks, param)
-
-            update_refreshTokenArray.push(refresh_token)
-
-            // console.log(sendMessage)
-
-            message.push(sendMessage)
-        } catch (e) {
-            console.log('catch > e = '  + e);
-            console.error(e)
-            message.push(e)
+            logger.addContext("user", `账号${index}`)
+            const tokenResult = await goToken(refresh_token)
+            logger.addContext("user", `账号${index}(${tokenResult.nick_name})`)
+            await goSignInList(tokenResult.access_token)
+            update_refreshTokenArray.push(tokenResult.refresh_token)
+        } catch (error) {
+            console.error(error)
+            logger.error(error)
+        } finally {
+            logger.removeContext("user")
         }
-        index++
     }
 
     if (update_refreshTokenArray.length) {
-        let createOrUpdateARepositorySecret_msg = '更新 REFRESH_TOKENS ';
         try {
-            let res = await createOrUpdateARepositorySecret({
+            const res = await createOrUpdateARepositorySecret({
                 // owner: OWNER, 
                 // repo: REPO, 
                 secret_name: 'REFRESH_TOKENS', 
                 secret_value: update_refreshTokenArray.join("&")
             })
-            createOrUpdateARepositorySecret_msg += '成功 res = ' + res
-        } catch (e) {
-            createOrUpdateARepositorySecret_msg += '失败 e = ' + e
-            console.error(e);
-        } finally {
-            // console.log(createOrUpdateARepositorySecret_msg);
-            message.push(createOrUpdateARepositorySecret_msg)
-        }   
+            logger.info(`更新REFRESH_TOKENS成功 res=${res}`)
+        } catch (error) {
+            console.error(error)
+            logger.info(`更新REFRESH_TOKENS失败 error=${error}`)
+        } 
     }
 
-    // console.log(message)
+    // console.log(`getLog4jsStr()\n${getLog4jsStr()}`)
 
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: message.join('\n') 
+        message: getLog4jsStr()
     });
 
 })()
