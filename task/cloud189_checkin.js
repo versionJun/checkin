@@ -193,7 +193,7 @@ function goUserSign(cookieJar){
     })
     .then(res => {
         
-        logger.info(`${res.data.isSign ? '已经签到' : '签到成功'},获得${res.data.netdiskBonus}M空间`)
+        logger.info(`${res.data.isSign ? '已经签到' : '签到成功'}(${dayjs(res.data.signTime).format('YYYY-MM-DD HH:mm:ss')}),获得${res.data.netdiskBonus}M空间`)
 
     })
     .catch(error => {
