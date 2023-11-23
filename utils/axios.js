@@ -22,9 +22,10 @@ axios.interceptors.response.use((res) => {
 
         const axiosConfig = error.config
 
+        // If config does not exist or the retry option is not set, reject
         if (!axiosConfig || !axiosConfig.retry) return Promise.reject(error)
 
-         //如果有响应内容，就直接返回错误信息，不再发送请求
+        // 如果有响应内容，就直接返回错误信息，不再发送请求
         if(error.response && error.response.data) return Promise.reject(error)
 
         // __retryCount用来记录当前是第几次发送请求
@@ -46,7 +47,8 @@ axios.interceptors.response.use((res) => {
             errorInfo.push(`${axiosConfig.method}=>${axiosConfig.url}`)
             // if (axiosConfig.params) errorInfo.push(`params=${axiosConfig.params}`)
             // if (axiosConfig.data) errorInfo.push(`data=${axiosConfig.data}`)
-            if (error.cause) errorInfo.push(`Error.cause=${JSON.stringify(error.cause)}`)
+            if (error.message) errorInfo.push(`error.message=${error.message}`)
+            if (error.cause) errorInfo.push(`error.cause=${JSON.stringify(error.cause)}`)
             logger.error(errorInfo.join('; '))
             setTimeout(function () {
                 resolve()
