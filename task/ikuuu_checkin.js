@@ -1,17 +1,13 @@
-const axios = require("axios")
-// const jsdom = require("jsdom")
+const axios = require('../utils/axios.js')
 const cheerio = require('cheerio')
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
 const accounts = require('../config/ikuuu_accounts.js')
-const dayjs = require('dayjs')
-const utc = require('dayjs/plugin/utc')
-const timezone = require('dayjs/plugin/timezone')
-dayjs.extend(utc)
-dayjs.extend(timezone)
-dayjs.tz.setDefault('Asia/Shanghai')
+const { dayjs } = require('../utils/dayjs.js')
+const { logger, getLog4jsStr } = require('../utils/log4js.js')
 const tough = require('tough-cookie')
 const Cookie = tough.Cookie
+
 
 const BASE_URL = 'https://ikuuu.org/'
 const LOGIN_URL = `${BASE_URL}auth/login`
@@ -19,25 +15,9 @@ const USER_URL = `${BASE_URL}user/`
 const CHECKIN_URL = `${BASE_URL}user/checkin`
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
 
+const encryptEmail = (email) => { return email.replace(/^(\S{3})(?:\S*)(\S{2}@\S+)$/, '$1***$2') }
 
-// function getUser() {
-
-//     const userJsonStr = process.env.IKUUU_USER || ''
-
-//     if (!userJsonStr) {
-//         console.error("未获取到 IKUUU_USER , 程序终止")
-//         process.exit(0)
-//     }
-
-//     let userJson = JSON.parse(userJsonStr)
-
-//     if (!Array.isArray(userJson))
-//         userJson = [userJson]
-
-//     return userJson
-// }
-
-function login(user){
+function goLogin(user){
     return axios(`${LOGIN_URL}`, {
         method: 'POST',
         headers: {
@@ -52,16 +32,10 @@ function login(user){
         }
     })
     .then(d => {
-        // console.log(d)
 
-        // console.log(d.data)
-        // { ret: 1, msg: '登录成功' }
-        // { ret: 0, msg: '邮箱不存在' }
-        // { ret: 0, msg: '邮箱或者密码错误' }
         if (d.data.ret !== 1) 
-            return Promise.reject(`登录失败(by:${JSON.stringify(d.data)})`)
+            return Promise.reject(`登录失败(by:${d.data.msg})`)
 
-        // console.log(d.headers)
         let cookies = []
         if (Array.isArray(d.headers['set-cookie'])){
             d.headers['set-cookie'].map(item => {
@@ -72,9 +46,11 @@ function login(user){
             cookies = [Cookie.parse(d.headers['set-cookie']).cookieString()]
         }
 
-        // console.log(cookies)
-
         return cookies.join(';')
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goLogin->${error}`)
     })
 }
 
@@ -93,7 +69,7 @@ function getCookieMap(cookie) {
     return cookieMap
 }
 
-function go_checkin_url(cookie) {
+function goCheckin(cookie) {
     return axios(`${CHECKIN_URL}`, {
         method: 'POST',
         headers: {
@@ -105,18 +81,19 @@ function go_checkin_url(cookie) {
         }
     })
     .then(d => {
-        // console.log(d.data)
-        // { ret: 0, msg: '您似乎已经签到过了...' }
-        // { ret: 1, msg: '你获得了 1792 MB流量' }
 
         if (d.data.msg == undefined)
             return Promise.reject('cookie已过期或无效')
 
         return d.data
     })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goCheckin->${error}`)
+    })
 }
 
-function go_user_url(cookie) {
+function goUser(cookie) {
     return axios(`${USER_URL}`, {
         method: 'GET',
         headers: {
@@ -127,57 +104,42 @@ function go_user_url(cookie) {
     .then(d => {
 
         const $ = cheerio.load(d.data)
-
-        // $('.card-wrap:contains("剩余流量") > .card-body').text().trim()
         const unUsedTraffic = $('.card-wrap:contains("剩余流量") > .card-body').text().trim()
 
-        // $('.card-wrap > .card-body:contains("GB")').text().trim() 
-        // const unUsedTraffic = $('.card-wrap > .card-body:contains("GB")').text().trim() 
-        
-
-        // const html_dom = new jsdom.JSDOM(d.data)
-        
-        // Array.from(document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim() 
-        // const unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap')).find(el => el.textContent.includes('剩余流量')).children[1].textContent.trim()
-
-        // Array.from(document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim() 
-        // const unUsedTraffic = Array.from(html_dom.window.document.querySelectorAll('.card-wrap > .card-body')).find(el => el.textContent.includes('GB')).textContent.trim()
-
         return { unUsedTraffic }
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goUser->${error}`)
     })
 }
 
 !(async () => {
 
-    const message = []
     for (let index = 0; index < accounts.length; index++) {
         const user = accounts[index]
         if(!user.email || !user.passwd)
             continue
-        const account = `账号${index}`
-        const msg = [`${account}`]
         try {
-            const userCookie = await login(user)
+            logger.addContext("user", `账号${index}`)
+            const userCookie = await goLogin(user)
             const cookieMap = getCookieMap(userCookie)
-            const checkin_result = await go_checkin_url(userCookie)
-            const { unUsedTraffic } = await go_user_url(userCookie)
-            msg.push(`${checkin_result.msg}`)
-            msg.push(`${cookieMap.get("email")}`)
-            msg.push(`剩余流量:${unUsedTraffic}`)
+            logger.addContext("user", `账号${index}(${encryptEmail(cookieMap.get("email"))})`)
+            const checkin_result = await goCheckin(userCookie)
+            const { unUsedTraffic } = await goUser(userCookie)
+            logger.info(`${checkin_result.msg}(剩余流量:${unUsedTraffic})`)
         } catch (error) {
-            console.log(`${account} catch > error = ${error}`);
             console.error(error)
-            msg.push(error)
+            logger.error(error)
         } finally {
-            message.push(msg.join('---'))
+            logger.removeContext("user")
         }
     }
-    
-    // console.log(message)
+
 
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: message.join('\n') 
+        message: getLog4jsStr() 
     });
 
 })()
