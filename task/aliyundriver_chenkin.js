@@ -71,7 +71,11 @@ function goSignInList(access_token) {
         logger.info(`签到成功,本月累计签到${signInCount}天`)
 
         if (currentSignInfo.isReward) {
-            logger.info( `今日(${currentSignInfo.calendarMonth}${currentSignInfo.calendarDay}号)签到获得:${currentSignInfo.reward.name || ''}${currentSignInfo.reward.description || '' }`)
+            const msg = []
+            msg.push(`今日(${currentSignInfo.calendarMonth}${currentSignInfo.calendarDay}号)`)
+            msg.push(`签到获得:${currentSignInfo.reward.name || ''}${currentSignInfo.reward.description || '' }`)
+            if (currentSignInfo.reward.notice) msg.push(`(${currentSignInfo.reward.notice})`)
+            logger.info(msg.join(''))
         }
 
         // 未领取奖励列表
@@ -83,7 +87,11 @@ function goSignInList(access_token) {
                 const signInDay = reward.day
                 try {
                     const rewardInfo = await goSginInReward(access_token, signInDay)
-                    logger.info(`第${signInDay}天奖励领取成功: 获得${rewardInfo.name || ''}${rewardInfo.description || ''}`)
+                    const msg = []
+                    msg.push(`第${signInDay}天`)
+                    msg.push(`奖励领取成功: ${rewardInfo.name || ''}${rewardInfo.description || '' }`)
+                    if (rewardInfo.notice) msg.push(`(${rewardInfo.notice})`)
+                    logger.info(msg.join(''))
                 } catch (e) {
                     logger.error(`第${signInDay}天奖励领取失败:`, e)
                 }
