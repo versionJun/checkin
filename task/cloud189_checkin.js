@@ -84,7 +84,7 @@ function goLoginUrl() {
     })
     .catch(error => {
         console.error(error)
-        return Promise.reject(`goRedirect->${error}`)
+        return Promise.reject(`goLoginUrl->${error}`)
     })
 }
 
