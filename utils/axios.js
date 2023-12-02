@@ -2,8 +2,8 @@ const axios = require('axios')
 const { logger } = require('./log4js')
 
 
-//请求超时时间（5秒后还未接收到数据，就需要再次发送请求）
-axios.defaults.timeout = 5 * 1000 
+//请求超时时间（超时后还未接收到数据，就需要再次发送请求）
+axios.defaults.timeout = 10 * 1000 
 
 //设置全局重试请求次数（最多重试几次请求）
 axios.defaults.retry = 3
