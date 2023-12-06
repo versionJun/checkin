@@ -28,7 +28,7 @@ axios.interceptors.request.use(
 )
 
 // 响应拦截器  
-axios.interceptors.response.use((res) => {
+axios.interceptors.response.use((response) => {
 
         const startTime = response.config.headers['request-startTime']
         const currentTime = new Date().getTime()
