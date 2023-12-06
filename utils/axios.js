@@ -37,7 +37,7 @@ axios.interceptors.response.use((response) => {
         const logInfo = []
         logInfo.push(`${response.config.method}=>${response.config.url}`)
         logInfo.push(`requestDuration=${requestDuration}s`)
-        logger.debug(logInfo.join('; '))
+        logger.debug(logInfo.join(' '))
 
         return Promise.resolve(response);
 
@@ -74,7 +74,7 @@ axios.interceptors.response.use((response) => {
             // if (axiosConfig.data) errorInfo.push(`data=${axiosConfig.data}`)
             if (error.message) errorInfo.push(`error.message=${error.message}`)
             if (error.cause) errorInfo.push(`error.cause=${JSON.stringify(error.cause)}`)
-            logger.error(errorInfo.join('; '))
+            logger.error(errorInfo.join(' '))
             setTimeout(function () {
                 resolve()
             }, retryDelay)
