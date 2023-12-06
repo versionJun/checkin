@@ -48,7 +48,7 @@ log4js.configure({
 
 const levelStrArr = [ 'ALL', 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'MARK', 'OFF' ]
 
-const getLevelStrArrIndex = (levelStr) => { return levelStrArr.findIndex(value=>value == levelStr) }
+const getLevelStrArrIndex = (levelStr) => { return levelStrArr.findIndex(value => value == levelStr) }
 
 function getLog4jsStr(levelStr = 'ALL') {
     let log4jsEvent = recording.replay()
