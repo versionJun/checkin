@@ -11,8 +11,33 @@ axios.defaults.retry = 3
 //设置全局重试请求间隔
 axios.defaults.retryDelay = 1000
 
+// 添加请求拦截器
+axios.interceptors.request.use(
+    config => {
+        // Do something before request is sent
+
+        config.headers['request-startTime'] = new Date().getTime()
+
+        return config
+    },
+    error => {
+        // Do something with request error
+
+        return Promise.reject(error)
+    }
+)
+
 //响应拦截器  
 axios.interceptors.response.use((res) => {
+
+        const startTime = response.config.headers['request-startTime']
+        const currentTime = new Date().getTime()
+        const requestDuration = ((currentTime - startTime) / 1000).toFixed(2)
+
+        const logInfo = []
+        logInfo.push(`${response.config.method}=>${response.config.url}`)
+        logInfo.push(`requestDuration=${requestDuration}s`)
+        logger.debug(logInfo.join('; '))
 
         return Promise.resolve(res);
 
