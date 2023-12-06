@@ -1,18 +1,14 @@
 const axios = require('axios')
 const { logger } = require('./log4js')
 
-
-// 请求超时时间（超时后还未接收到数据，就需要再次发送请求）
-axios.defaults.timeout = 10 * 1000 
-
-// 全局重试请求次数（最多重试几次请求）
-axios.defaults.retry = 3
-
-// 全局重试请求间隔
-axios.defaults.retryDelay = 1000
+const service = axios.create({
+    timeout: 10 * 1000,     // 请求超时时间（超时后还未接收到数据，就需要再次发送请求）
+    retry: 3,               // 全局重试请求次数（最多重试几次请求）
+    retryDelay: 1 * 1000,   // 全局重试请求间隔
+});
 
 // 请求拦截器
-axios.interceptors.request.use(
+service.interceptors.request.use(
     config => {
         // Do something before request is sent
 
@@ -28,7 +24,7 @@ axios.interceptors.request.use(
 )
 
 // 响应拦截器  
-axios.interceptors.response.use((response) => {
+service.interceptors.response.use((response) => {
 
         const startTime = response.config.headers['request-startTime']
         const currentTime = new Date().getTime()
@@ -38,6 +34,7 @@ axios.interceptors.response.use((response) => {
         logInfo.push(`${response.config.method}=>${response.config.url}`)
         logInfo.push(`requestDuration=${requestDuration}s`)
         logger.debug(logInfo.join(' '))
+
 
         return Promise.resolve(response);
 
@@ -82,9 +79,9 @@ axios.interceptors.response.use((response) => {
 
         // 再次发送请求
         return backoff.then(function () {
-            return axios(axiosConfig)
+            return service(axiosConfig)
         })
     }
 )
 
-module.exports = axios
+module.exports = service
