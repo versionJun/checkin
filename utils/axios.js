@@ -2,16 +2,16 @@ const axios = require('axios')
 const { logger } = require('./log4js')
 
 
-//请求超时时间（超时后还未接收到数据，就需要再次发送请求）
+// 请求超时时间（超时后还未接收到数据，就需要再次发送请求）
 axios.defaults.timeout = 10 * 1000 
 
-//设置全局重试请求次数（最多重试几次请求）
+// 全局重试请求次数（最多重试几次请求）
 axios.defaults.retry = 3
 
-//设置全局重试请求间隔
+// 全局重试请求间隔
 axios.defaults.retryDelay = 1000
 
-// 添加请求拦截器
+// 请求拦截器
 axios.interceptors.request.use(
     config => {
         // Do something before request is sent
@@ -27,7 +27,7 @@ axios.interceptors.request.use(
     }
 )
 
-//响应拦截器  
+// 响应拦截器  
 axios.interceptors.response.use((res) => {
 
         const startTime = response.config.headers['request-startTime']
