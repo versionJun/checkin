@@ -39,7 +39,7 @@ axios.interceptors.response.use((response) => {
         logInfo.push(`requestDuration=${requestDuration}s`)
         logger.debug(logInfo.join('; '))
 
-        return Promise.resolve(res);
+        return Promise.resolve(response);
 
     }, (error) => {
 
