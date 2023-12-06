@@ -248,10 +248,8 @@ async function goDrawPrizeMarketDetails(cookieJar){
         }
     }
     
-    // console.log(`getLog4jsStr()\n${getLog4jsStr()}`)
-
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: getLog4jsStr() 
+        message: getLog4jsStr('INFO') 
     });
 })()
