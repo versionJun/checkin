@@ -40,15 +40,20 @@ log4js.configure({
                 "recording",
                 "stdout"
             ],
-            level: "trace",
+            level: "ALL",
             // enableCallStack: true
         },
     },
 });
 
-function getLog4jsStr(level) {
+const levelStrArr = [ 'ALL', 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'MARK', 'OFF' ]
+
+const getLevelStrArrIndex = (levelStr) => { return levelStrArr.findIndex(value=>value == levelStr) }
+
+function getLog4jsStr(levelStr = 'ALL') {
     let log4jsEvent = recording.replay()
-    if (level) log4jsEvent = log4jsEvent.filter(e => e.level.levelStr == level)
+    if (levelStr != 'ALL')
+        log4jsEvent = log4jsEvent.filter(e => getLevelStrArrIndex(e.level.levelStr) >= getLevelStrArrIndex(levelStr))
     return log4jsEvent.map((e) => log4jsLayoutDiv(e)).join('\n')
 }
 
