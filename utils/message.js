@@ -21,30 +21,27 @@ async function sent_message_by_pushplus(params) {
         return;
     }
 
-    const { title, message } = params
+    const { title , message } = params
+    
+    return axios("http://www.pushplus.plus/send", {
+        method: 'POST',
+        data: {
+            token: PUSHPLUS_TOKEN,
+            title: title,
+            content: message
+        }
+    }).then(res => {
 
-    let data = {
-        token: PUSHPLUS_TOKEN,
-        title: title,
-        content: message
-    }
-
-    try {
-
-        let res = await axios.post("http://www.pushplus.plus/send", data)
-        
-        console.log(`发送pushplus res=${JSON.stringify(res.data)}`)
+        console.log(`发送pushplus res.data=${JSON.stringify(res.data)}`)
 
         if (res.data.code !== 200)
             return Promise.reject(`${res.data.msg}`) 
 
-        return res.data.code
-
-    } catch (e) {
-        console.log(`发送pushplus失败:${e}`)
+    }).catch(error => {
+        console.error(error)
+        console.log(`发送pushplus失败:${error}`)
         console.log(`发送pushplus失败->params=${JSON.stringify(params)}`)
-        console.error(e)
-    }
+    })
 }
 
 /**
