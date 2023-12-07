@@ -48,6 +48,8 @@ const DRAWPRIZEMARKETDETAILS_URL = [
     `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_2022_FLDFS_KJ&activityId=ACT_SIGNIN`,
 ]
 
+axios.defaults.timeout = 5 * 1000 
+
 function goEncryptConf(){
     if (config.pre && config.pubKey)
         return { 
