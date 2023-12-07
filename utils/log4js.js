@@ -50,10 +50,9 @@ const levelStrArr = [ 'ALL', 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL',
 
 const getLevelStrArrIndex = (levelStr) => { return levelStrArr.findIndex(value => value == levelStr) }
 
-function getLog4jsStr(levelStr = 'ALL') {
+function getLog4jsStr(levelStr) {
     let log4jsEvent = recording.replay()
-    if (levelStr != 'ALL')
-        log4jsEvent = log4jsEvent.filter(e => getLevelStrArrIndex(e.level.levelStr) >= getLevelStrArrIndex(levelStr))
+    if (levelStr) log4jsEvent = log4jsEvent.filter(e => getLevelStrArrIndex(e.level.levelStr) >= getLevelStrArrIndex(levelStr))
     return log4jsEvent.map((e) => log4jsLayoutDiv(e)).join('\n')
 }
 
