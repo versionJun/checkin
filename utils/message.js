@@ -1,4 +1,4 @@
-const axios = require("axios")
+const axios = require('./axios.js')
 
 // pushplus
 const PUSHPLUS_TOKEN = process.env.PUSHPLUS_TOKEN
@@ -18,11 +18,12 @@ const SCT_SENDKEY = process.env.SCT_SENDKEY
 async function sent_message_by_pushplus(params) {
 
     if (!PUSHPLUS_TOKEN) {
+        console.error("未获取到 PUSHPLUS_TOKEN, 取消推送")
         return;
     }
 
     const { title , message } = params
-    
+
     return axios("http://www.pushplus.plus/send", {
         method: 'POST',
         data: {
@@ -37,6 +38,8 @@ async function sent_message_by_pushplus(params) {
         if (res.data.code !== 200)
             return Promise.reject(`${res.data.msg}`) 
 
+        return res.data.code
+
     }).catch(error => {
         console.error(error)
         console.log(`发送pushplus失败:${error}`)
@@ -45,7 +48,7 @@ async function sent_message_by_pushplus(params) {
 }
 
 /**
- * 发送server酱油 消息
+ * 发送server酱 消息
  * 文档：https://sct.ftqq.com/
  * @param params = { 
  *  title : 消息标题, 
@@ -56,34 +59,34 @@ async function sent_message_by_pushplus(params) {
 async function sent_message_by_sct(params) {
 
     if (!SCT_SENDKEY) {
+        console.error("未获取到 SCT_SENDKEY, 取消推送")
         return;
     }
 
     const { title, message } = params
 
-    let url = `https://sctapi.ftqq.com/${SCT_SENDKEY}.send`;
+    return axios(`https://sctapi.ftqq.com/${SCT_SENDKEY}.send`, {
+        method: 'POST',
+        data: {
+            title: title,
+            content: message
+        }
+    }).then(res => {
 
-    let data = {
-        title: title,
-        content: message
-    }
-
-    try {
-        
-        let res = await axios.post(url, data)
-
-        console.log(`发送server酱 res=${JSON.stringify(res.data)}`)
+        console.log(`发送server酱 res.data=${JSON.stringify(res.data)}`)
 
         const { pushid, readkey } = res.data.data
 
         return { pushid, readkey }
 
-    } catch (e) {
-        console.log(`发送pserver酱失败:${e}`)
+    }).catch(error => {
+        console.error(error)
+        console.log(`发送pserver酱失败:${error}`)
+        if (error.response && error.response.data) {
+            console.log(`发送pserver酱失败->error.response.data=${JSON.stringify(error.response.data)}`)
+        }
         console.log(`发送pserver酱失败->params=${JSON.stringify(params)}`)
-        console.error(e)
-    }
-
+    })
 }
 
 exports.sent_message_by_pushplus = sent_message_by_pushplus
