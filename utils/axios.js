@@ -23,18 +23,21 @@ service.interceptors.request.use(
     }
 )
 
+function printRequestDurationInfo(config){
+    const startTime = config.headers['request-startTime']
+    const currentTime = new Date().getTime()
+    const requestDuration = ((currentTime - startTime) / 1000).toFixed(2)
+    
+    const logInfo = []
+    logInfo.push(`${config.method}=>${config.url}`)
+    logInfo.push(`requestDuration=${requestDuration}s`)
+    logger.debug(logInfo.join(' '))
+}
+
 // 响应拦截器  
 service.interceptors.response.use((response) => {
 
-        const startTime = response.config.headers['request-startTime']
-        const currentTime = new Date().getTime()
-        const requestDuration = ((currentTime - startTime) / 1000).toFixed(2)
-
-        const logInfo = []
-        logInfo.push(`${response.config.method}=>${response.config.url}`)
-        logInfo.push(`requestDuration=${requestDuration}s`)
-        logger.debug(logInfo.join(' '))
-
+        printRequestDurationInfo(response.config)
 
         return Promise.resolve(response);
 
@@ -43,6 +46,8 @@ service.interceptors.response.use((response) => {
         // console.error(error)
 
         const axiosConfig = error.config
+
+        printRequestDurationInfo(axiosConfig)
 
         // If config does not exist or the retry option is not set, reject
         if (!axiosConfig || !axiosConfig.retry) return Promise.reject(error)
