@@ -27,8 +27,8 @@ function goCheckin(cookie){
 
         // console.log(res.data)
 
-        if (res.data.code == -2 )
-            return Promise.reject(`cookie已过期或无效(${res.data.message})`)
+        if (res.data.code === -2 )
+            return Promise.reject(`cookie已过期或无效(by:${res.data.message})`)
 
         return res.data
     })
@@ -49,6 +49,9 @@ function goStatus(cookie){
     .then(res => {
 
         // console.log(res.data)
+
+        if (res.data.code === -2 )
+            return Promise.reject(`cookie已过期或无效(by:${res.data.message})`)
 
         return res.data
     })
