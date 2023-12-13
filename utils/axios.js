@@ -55,7 +55,6 @@ service.interceptors.response.use((response) => {
         // 如果有响应内容，就直接返回错误信息，不再发送请求
         if (error.response && error.response.data) return Promise.reject(error)
 
-        if (error.message && !(/^timeout of \d*ms exceeded$/).test(error.message)) console.error(error)
 
         // __retryCount用来记录当前是第几次发送请求
         axiosConfig.__retryCount = axiosConfig.__retryCount || 0
@@ -68,6 +67,7 @@ service.interceptors.response.use((response) => {
                         
         // 设置请求间隔 在发送下一次请求之前停留一段时间，时间为重试请求间隔
         const backoff = new Promise(function (resolve) {
+            if (error.message && !(/^timeout of \d*ms exceeded$/).test(error.message)) console.error(error)
             const retryDelay =  axiosConfig.retryDelay || 1
             const errorInfo = []
             errorInfo.push(`__retryCount=${axiosConfig.__retryCount}`)
