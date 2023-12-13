@@ -55,7 +55,6 @@ service.interceptors.response.use((response) => {
         // 如果有响应内容，就直接返回错误信息，不再发送请求
         if (error.response && error.response.data) return Promise.reject(error)
 
-
         // __retryCount用来记录当前是第几次发送请求
         axiosConfig.__retryCount = axiosConfig.__retryCount || 0
 
