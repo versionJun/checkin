@@ -23,13 +23,15 @@ service.interceptors.request.use(
     }
 )
 
+const urlExcludeParams = (url) => { return url.replace(/^([^\?]*).*$/, '$1') }
+
 function printRequestDurationInfo(config){
     const startTime = config.headers['request-startTime']
     const currentTime = new Date().getTime()
     const requestDuration = ((currentTime - startTime) / 1000).toFixed(2)
     
     const logInfo = []
-    logInfo.push(`${config.method}=>${config.url}`)
+    logInfo.push(`${config.method}=>${urlExcludeParams(config.url)}`)
     logInfo.push(`requestDuration=${requestDuration}s`)
     logger.debug(logInfo.join(' '))
 }
@@ -43,8 +45,6 @@ service.interceptors.response.use((response) => {
 
     }, (error) => {
 
-        // console.error(error)
-
         const axiosConfig = error.config
 
         printRequestDurationInfo(axiosConfig)
@@ -53,7 +53,9 @@ service.interceptors.response.use((response) => {
         if (!axiosConfig || !axiosConfig.retry) return Promise.reject(error)
 
         // 如果有响应内容，就直接返回错误信息，不再发送请求
-        if(error.response && error.response.data) return Promise.reject(error)
+        if (error.response && error.response.data) return Promise.reject(error)
+
+        if (error.message && !(/^timeout of \d*ms exceeded$/).test(error.message)) console.error(error)
 
         // __retryCount用来记录当前是第几次发送请求
         axiosConfig.__retryCount = axiosConfig.__retryCount || 0
@@ -66,12 +68,11 @@ service.interceptors.response.use((response) => {
                         
         // 设置请求间隔 在发送下一次请求之前停留一段时间，时间为重试请求间隔
         const backoff = new Promise(function (resolve) {
-            console.error(error)
             const retryDelay =  axiosConfig.retryDelay || 1
             const errorInfo = []
             errorInfo.push(`__retryCount=${axiosConfig.__retryCount}`)
             // errorInfo.push(`retryDelay=${retryDelay}`)
-            errorInfo.push(`${axiosConfig.method}=>${axiosConfig.url}`)
+            errorInfo.push(`${axiosConfig.method}=>${urlExcludeParams(axiosConfig.url)}`)
             // if (axiosConfig.params) errorInfo.push(`params=${axiosConfig.params}`)
             // if (axiosConfig.data) errorInfo.push(`data=${axiosConfig.data}`)
             if (error.message) errorInfo.push(`error.message=${error.message}`)
