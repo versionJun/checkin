@@ -3,8 +3,11 @@ name: "cloud189_checkin"
 on:
   schedule:
     # UTC 16点30分(北京时间 0点30分) 30 16 * * *
-    - cron: "55 16 * * *"
+    - cron: "40 16 * * *"
   workflow_dispatch:
+
+env:
+  IS_SCHEDULE: ${{ github.event_name  == 'schedule' }}
 
 jobs:
   build:
