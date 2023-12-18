@@ -49,6 +49,7 @@ const DRAWPRIZEMARKETDETAILS_URL = [
 ]
 
 axios.defaults.timeout = 5 * 1000 
+axios.defaults.retry = 5
 
 function goEncryptConf(){
     if (config.pre && config.pubKey)
