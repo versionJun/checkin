@@ -76,7 +76,7 @@ service.interceptors.response.use((response) => {
             // if (axiosConfig.data) errorInfo.push(`data=${axiosConfig.data}`)
             if (error.message) errorInfo.push(`error.message=${error.message}`)
             if (error.cause) errorInfo.push(`error.cause=${JSON.stringify(error.cause)}`)
-            logger.error(errorInfo.join(' '))
+            logger.warn(errorInfo.join(' '))
             setTimeout(function () {
                 resolve()
             }, retryDelay)
