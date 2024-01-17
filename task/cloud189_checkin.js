@@ -209,7 +209,8 @@ async function goDrawPrizeMarketDetails(cookieJar){
     for (let index = 0; index < DRAWPRIZEMARKETDETAILS_URL.length; index++) {
         await axios(DRAWPRIZEMARKETDETAILS_URL[index], {
             method: 'GET',
-            jar: cookieJar
+            jar: cookieJar,
+            isUrlExcludeParams: false
         })
         .then(res => {
             
