@@ -1,14 +1,14 @@
-const axios = require("axios")
-// const jsdom = require("jsdom")
+const axios = require('../utils/axios.js')
 const cheerio = require('cheerio')
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
-const dayjs = require('dayjs')
-const utc = require('dayjs/plugin/utc')
-const timezone = require('dayjs/plugin/timezone')
-dayjs.extend(utc)
-dayjs.extend(timezone)
-dayjs.tz.setDefault('Asia/Shanghai')
+const { dayjs } = require('../utils/dayjs.js')
+const { logger, getLog4jsStr } = require('../utils/log4js.js')
+
+const BASE_URL = 'https://www.hifini.com/'
+const SG_SIGN_URL = `${BASE_URL}sg_sign.htm`
+const MY_URL = `${BASE_URL}my.htm`
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
 
 
 function getHifinCookie() {
@@ -30,20 +30,20 @@ function getHifinCookie() {
     return HIFIN_COOKIE_ARR
 }
 
-function go_sign_url(cookie){
-    return axios('https://www.hifini.com/sg_sign.htm', {
+function goSgSign(cookie){
+    return axios(`${SG_SIGN_URL}`, {
         method: 'POST',
         headers: {
-            'Origin': 'https://www.hifini.com/',
-            'referer': 'https://www.hifini.com/',
+            'Origin': `${BASE_URL}`,
+            'referer': `${BASE_URL}`,
             'Cookie': cookie,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'User-Agent': UA,
             'Content-Type': 'text/html; charset=utf-8'
         }
     })
     .then(d => {
 
-       const $ = cheerio.load(d.data)
+        const $ = cheerio.load(d.data)
 
         const username_element = $('.nav-item.username')
 
@@ -55,17 +55,21 @@ function go_sign_url(cookie){
         const msg_element = $('#body')
         
         const msg = msg_element ? msg_element.text().trim() : null
-        
+
         return { username, msg }
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goSgSign->${error}`)
     })
 }
 
-function go_my_url(cookie){
-    return axios('https://www.hifini.com/my.htm', {
+function goMy(cookie){
+    return axios(`${MY_URL}`, {
         method: 'GET',
         headers: {
             'Cookie': cookie,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'User-Agent': UA,
             'Content-Type': 'text/html; charset=utf-8'
         }
     })
@@ -74,11 +78,11 @@ function go_my_url(cookie){
         const $ = cheerio.load(d.data)
         const species = $('span.text-muted:contains("金币") > em').text().trim()
 
-        // const html_dom = new jsdom.JSDOM(d.data)
-        // Array.from(document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
-        // const species = Array.from(html_dom.window.document.querySelectorAll('span.text-muted')).find(el => el.textContent.includes('金币')).children[0].textContent.trim()
-        
         return { species }
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goMy->${error}`)
     })
 }
 
@@ -86,40 +90,33 @@ function go_my_url(cookie){
 
     const HIFIN_COOKIE_ARR = await getHifinCookie()
     
-    let index = 1
-    const message = []
-    for (HIFIN_COOKIE of HIFIN_COOKIE_ARR) {
-        let account = `账号${index}`
-        let remarks = `${account}`
+    for (let index = 0; index < HIFIN_COOKIE_ARR.length; index++) {
+        const cookie = HIFIN_COOKIE_ARR[index]
+        if(!cookie) continue
         try {
-                
-            const { username, msg } = await go_sign_url(HIFIN_COOKIE)
-            
-            remarks += `---${username}`
+            logger.addContext("user", `账号${index}`)
 
-            if (msg) remarks += `---${msg}`
+            const { username, msg } = await goSgSign(cookie)
 
-            const { species } = await go_my_url(HIFIN_COOKIE)
+            logger.addContext("user", `账号${index}(${username})`)
 
-            remarks += `---剩余金币:${species}`
+            const { species } = await goMy(cookie)
 
-            // console.log(remarks)
+            logger.info(`${msg}(剩余金币:${species})`)
 
-            message.push(remarks)
-
-        } catch (e) {
-            console.log(`${account} catch > e = ${e}`);
-            console.error(e)
-            message.push(remarks + "---" +e)
+        } catch (error) {
+            console.error(error)
+            logger.error(error)
+        } finally {
+            logger.removeContext("user")
         }
-        index++
     }
 
-    // console.log(message)
+    // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
 
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: message.join('\n') 
+        message: getLog4jsStr('INFO')
     });
 
 })()
