@@ -56,6 +56,9 @@ function goSgSign(cookie){
         
         const msg = msg_element ? msg_element.text().trim() : null
 
+        if ((/^\S*请登录后再签到!\S*$/).test(msg))
+            return Promise.reject(`cookie已过期或无效(by:${msg}))`)
+
         return { username, msg }
     })
     .catch(error => {
