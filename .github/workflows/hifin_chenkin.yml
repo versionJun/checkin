@@ -31,8 +31,10 @@ jobs:
 
       - name: Run main
         env:
-          HIFIN_COOKIE: ${{ secrets.HIFIN_COOKIE }}
+          # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          # cookie, 多个账号 & 隔开
+          HIFIN_COOKIE: ${{ secrets.HIFIN_COOKIE }}
         run: |
           node ./task/hifin_chenkin.js
 
