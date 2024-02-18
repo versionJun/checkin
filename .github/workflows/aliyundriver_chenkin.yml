@@ -34,8 +34,11 @@ jobs:
 
       - name: Run main
         env:
-          REFRESH_TOKENS: ${{ secrets.REFRESH_TOKENS }}
+          # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          # refresh_token, 多个账号 & 隔开
+          REFRESH_TOKENS: ${{ secrets.REFRESH_TOKENS }}
+          # 在 Action 中运行时更新 Repository secrets
           GP_TOKEN: ${{ secrets.GP_TOKEN }}
         run: |
           node ./task/aliyundriver_chenkin.js
