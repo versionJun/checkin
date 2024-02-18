@@ -34,8 +34,10 @@ jobs:
 
       - name: Run main
         env:
-          GLADOS_COOKIE: ${{ secrets.GLADOS_COOKIE }}
+          # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          # cookie, 多个账号 & 隔开
+          GLADOS_COOKIE: ${{ secrets.GLADOS_COOKIE }}
         run: |
           node ./task/glados_chenkin.js
 
