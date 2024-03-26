@@ -30,7 +30,34 @@ function getHifinCookie() {
     return HIFIN_COOKIE_ARR
 }
 
-function goSgSign(cookie){
+function goBase(cookie){
+    return axios(`${BASE_URL}`, {
+        method: 'GET',
+        headers: {
+            'Origin': `${BASE_URL}`,
+            'referer': `${BASE_URL}`,
+            'Cookie': cookie,
+            'User-Agent': UA,
+            'Content-Type': 'text/html; charset=utf-8'
+        }
+    })
+    .then(d => {
+
+        const signReg = /(?<=var sign = ").*?(?=";)/g
+
+        const sign = d.data.match(signReg)
+
+        if (sign == null) return Promise.reject(`sign 获取失败`)
+
+        return { sign: sign[0] }
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goBase->${error}`)
+    })
+}
+
+function goSgSign(cookie, sign){
     return axios(`${SG_SIGN_URL}`, {
         method: 'POST',
         headers: {
@@ -38,7 +65,10 @@ function goSgSign(cookie){
             'referer': `${BASE_URL}`,
             'Cookie': cookie,
             'User-Agent': UA,
-            'Content-Type': 'text/html; charset=utf-8'
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data: {
+            'sign': sign
         }
     })
     .then(d => {
@@ -99,7 +129,9 @@ function goMy(cookie){
         try {
             logger.addContext("user", `账号${index}`)
 
-            const { username, msg } = await goSgSign(cookie)
+            const { sign } =await goBase(cookie)
+            
+            const { username, msg } = await goSgSign(cookie, sign)
 
             logger.addContext("user", `账号${index}(${username})`)
 
