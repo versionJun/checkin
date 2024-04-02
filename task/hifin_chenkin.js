@@ -11,16 +11,13 @@ const MY_URL = `${BASE_URL}my.htm`
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
 
 
-function getHifinCookie() {
+async function getHifinCookie() {
 
-    let HIFIN_COOKIE = process.env.HIFIN_COOKIE || ''
+    const HIFIN_COOKIE = process.env.HIFIN_COOKIE || ''
 
-    let HIFIN_COOKIE_ARR = []
-
-    if (HIFIN_COOKIE.indexOf('&') > -1)
-        HIFIN_COOKIE_ARR = HIFIN_COOKIE.split(/\s*&\s*/).filter(item => item != '')
-    else if (HIFIN_COOKIE)
-        HIFIN_COOKIE_ARR = [HIFIN_COOKIE]
+    const HIFIN_COOKIE_ARR = HIFIN_COOKIE.indexOf('&') > -1
+        ? HIFIN_COOKIE.split(/\s*&\s*/).filter(item => item !== '')
+        : HIFIN_COOKIE ? [HIFIN_COOKIE] : [];
 
     if (!HIFIN_COOKIE_ARR.length) {
         console.error("未获取到 HIFIN_COOKIE , 程序终止")
