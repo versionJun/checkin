@@ -40,13 +40,24 @@ function goBase(cookie){
     })
     .then(d => {
 
+        const $ = cheerio.load(d.data)
+
+        const username_element = $('.nav-item.username')
+
+        if (!username_element) return Promise.reject('cookie已过期或无效')
+
+        const username = username_element.text().trim()
+
         const signReg = /(?<=var sign = ").*?(?=";)/g
 
         const sign = d.data.match(signReg)
 
         if (sign == null) return Promise.reject(`sign 获取失败`)
 
-        return { sign: sign[0] }
+        return { 
+            username: username,
+            sign: sign[0] 
+        }
     })
     .catch(error => {
         console.error(error)
@@ -71,13 +82,6 @@ function goSgSign(cookie, sign){
     .then(d => {
 
         const $ = cheerio.load(d.data)
-
-        const username_element = $('.nav-item.username')
-
-        if (!username_element) 
-            return Promise.reject('cookie已过期或无效')
-
-        const username = username_element.text().trim()
         
         const msg_element = $('#body')
         
@@ -86,7 +90,7 @@ function goSgSign(cookie, sign){
         if ((/^\S*请登录后再签到!\S*$/).test(msg))
             return Promise.reject(`cookie已过期或无效(by:${msg}))`)
 
-        return { username, msg }
+        return { msg }
     })
     .catch(error => {
         console.error(error)
@@ -119,23 +123,17 @@ function goMy(cookie){
 !(async () => {
 
     const HIFIN_COOKIE_ARR = await getHifinCookie()
-    
+
     for (let index = 0; index < HIFIN_COOKIE_ARR.length; index++) {
         const cookie = HIFIN_COOKIE_ARR[index]
         if(!cookie) continue
         try {
             logger.addContext("user", `账号${index}`)
-
-            const { sign } =await goBase(cookie)
-            
-            const { username, msg } = await goSgSign(cookie, sign)
-
+            const { username, sign } = await goBase(cookie)
             logger.addContext("user", `账号${index}(${username})`)
-
+            const { msg } = await goSgSign(cookie, sign)
             const { species } = await goMy(cookie)
-
             logger.info(`${msg}(剩余金币:${species})`)
-
         } catch (error) {
             console.error(error)
             logger.error(error)
