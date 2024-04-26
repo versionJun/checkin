@@ -3,6 +3,14 @@
 | GP_TOKEN       | 在 Action 中运行时更新 Repository secrets           |
 | PUSHPLUS_TOKEN | [pushplus](http://www.pushplus.plus) Token 消息推送 |
 
+| 状态 | 说明                       |
+| ---- | -------------------------- |
+| 🟢    | 正常运行                   |
+| 🔴    | 暂不可用                   |
+| ⚪    | 暂未添加                   |
+| ⭕    | 已经移除                   |
+| 🟡    | 可正常运行，但有问题待验证 |
+
 | 任务名称                               | 状态 | 参数                                                  |
 | -------------------------------------- | ---- | ----------------------------------------------------- |
 | [阿里云盘](https://www.alipan.com/)    | 🟢    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
@@ -11,7 +19,7 @@
 | [HIFIN](https://www.hifini.com/)       | 🟢    | `HIFIN_COOKIE` 多账号 `&` 隔开                        |
 | [V2FREE](https://v2free.net/)          | 🔴    | [v2free_accounts.js](./config/v2free_accounts.js)     |
 | [IKUUU](https://ikuuu.org/)            | 🟢    | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
-| [TLY](https://tly31.com/)              | 🔴    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
+| [TLY](https://tly31.com/)              | ⭕    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
 
 > **获取 REFRESH_TOKENS 的方法**
 >
