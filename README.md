@@ -1,18 +1,19 @@
-| 参数          | 说明                                             |
-| ------------- | ------------------------------------------------ |
-| GP_TOKEN | 在 Action 中运行时更新 Repository secrets|
+| 公共参数       | 说明                                                |
+| -------------- | --------------------------------------------------- |
+| GP_TOKEN       | 在 Action 中运行时更新 Repository secrets           |
 | PUSHPLUS_TOKEN | [pushplus](http://www.pushplus.plus) Token 消息推送 |
-| REFRESH_TOKENS  | [阿里云盘](https://www.aliyundrive.com/drive) refresh_token, 多个账号 `&` 隔开 |
-| GLADOS_COOKIE  | [GLADOS](https://glados.rocks/console) cookie, 多个账号 `&` 隔开 |
-| HIFIN_COOKIE  | [HIFIN](https://www.hifini.com/) cookie, 多个账号 `&` 隔开 |
 
-| 目标          | 配置文件                                             |
-| ------------- | ------------------------------------------------ |
-| [IKUUU](https://ikuuu.org/)  | [ikuuu_accounts.js](./config/ikuuu_accounts.js)  |
-| [V2FREE](https://cdn.v2free.net/user)  | [v2free_accounts.js](./config/v2free_accounts.js) |
-| [CLOUD189](https://cloud.189.cn/)  |  [cloud189_accounts.js](./config/cloud189_accounts.js) |
+| 任务名称                               | 状态 | 参数                                                  |
+| -------------------------------------- | ---- | ----------------------------------------------------- |
+| [阿里云盘](https://www.alipan.com/)    | 🟢    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
+| [天翼云盘](https://cloud.189.cn/)      | 🟢    | [cloud189_accounts.js](./config/cloud189_accounts.js) |
+| [GLADOS](https://glados.rocks/console) | 🟢    | `GLADOS_COOKIE` 多账号 `&` 隔开                       |
+| [HIFIN](https://www.hifini.com/)       | 🟢    | `HIFIN_COOKIE` 多账号 `&` 隔开                        |
+| [V2FREE](https://v2free.net/)          | 🔴    | [v2free_accounts.js](./config/v2free_accounts.js)     |
+| [IKUUU](https://ikuuu.org/)            | 🟢    | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
+| [TLY](https://tly31.com/)              | 🔴    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
 
-> **获取 refresh_token 的方法**
+> **获取 REFRESH_TOKENS 的方法**
 >
 >  登录阿里云盘后，可以在`开发者工具(F12)` -> `Application` -> `Local Storage` 中的 `token` 字段对应的JSON中寻找`refresh_token`。
 
