@@ -1,4 +1,4 @@
-name: "glados_chenkin"
+name: "glados_checkin"
 
 on:
   schedule:
@@ -39,7 +39,7 @@ jobs:
           # cookie, 多个账号 & 隔开
           GLADOS_COOKIE: ${{ secrets.GLADOS_COOKIE }}
         run: |
-          node ./task/glados_chenkin.js
+          node ./task/glados_checkin.js
 
       - name: Delete old workflow run using Github Token
         uses: Mattraks/delete-workflow-runs@v2
@@ -48,4 +48,4 @@ jobs:
           repository: ${{ github.repository }}
           retain_days: 0
           keep_minimum_runs: 0
-          delete_workflow_pattern: "glados_chenkin"
+          delete_workflow_pattern: "glados_checkin"
