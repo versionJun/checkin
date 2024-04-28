@@ -3,24 +3,16 @@
 | GP_TOKEN       | 在 Action 中运行时更新 Repository secrets           |
 | PUSHPLUS_TOKEN | [pushplus](http://www.pushplus.plus) Token 消息推送 |
 
-| 状态 | 说明                       |
-| ---- | -------------------------- |
-| 🟢    | 正常运行                   |
-| 🔴    | 暂不可用                   |
-| ⚪    | 暂未添加                   |
-| ⭕    | 已经移除                   |
-| 🟡    | 可正常运行，但有问题待验证 |
-
 | 任务名称                               | 状态 | 参数                                                  |
 | -------------------------------------- | ---- | ----------------------------------------------------- |
-| [阿里云盘](https://www.alipan.com/)    | 🟢    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
-| [天翼云盘](https://cloud.189.cn/)      | 🟢    | [cloud189_accounts.js](./config/cloud189_accounts.js) |
-| [夸克网盘](https://pan.quark.cn/)      | 🟢    | `QUARK_COOKIE ` 多账号 `&` 隔开                       |
-| [GLADOS](https://glados.rocks/console) | 🟢    | `GLADOS_COOKIE` 多账号 `&` 隔开                       |
-| [HIFIN](https://www.hifini.com/)       | 🟢    | `HIFIN_COOKIE` 多账号 `&` 隔开                        |
-| [IKUUU](https://ikuuu.org/)            | 🟢    | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
-| [V2FREE](https://v2free.net/)          | 🔴    | [v2free_accounts.js](./config/v2free_accounts.js)     |
-| [TLY](https://tly31.com/)              | ⭕    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
+| [阿里云盘](https://www.alipan.com/)    | ✅    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
+| [天翼云盘](https://cloud.189.cn/)      | ✅    | [cloud189_accounts.js](./config/cloud189_accounts.js) |
+| [夸克网盘](https://pan.quark.cn/)      | ✅    | `QUARK_COOKIE ` 多账号 `&` 隔开                       |
+| [GLADOS](https://glados.rocks/console) | ✅    | `GLADOS_COOKIE` 多账号 `&` 隔开                       |
+| [HIFIN](https://www.hifini.com/)       | ✅    | `HIFIN_COOKIE` 多账号 `&` 隔开                        |
+| [IKUUU](https://ikuuu.org/)            | ✅    | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
+| [V2FREE](https://v2free.net/)          | ❌    | [v2free_accounts.js](./config/v2free_accounts.js)     |
+| [TLY](https://tly31.com/)              | ❌    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
 
 > **获取 REFRESH_TOKENS 的方法**
 >
@@ -41,3 +33,4 @@
 - @mrabit: [mrabit/aliyundriveDailyCheck](https://github.com/mrabit/aliyundriveDailyCheck/)
 - @jinchaofs: [jinchaofs/v2free-checkin](https://github.com/jinchaofs/v2free-checkin/)
 - @lukesyy: [lukesyy/glados_automation](https://github.com/lukesyy/glados_automation)
+- @HeiDaotu: [HeiDaotu/WFRobertQL](https://github.com/HeiDaotu/WFRobertQL)
