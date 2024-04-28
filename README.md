@@ -15,10 +15,11 @@
 | -------------------------------------- | ---- | ----------------------------------------------------- |
 | [阿里云盘](https://www.alipan.com/)    | 🟢    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
 | [天翼云盘](https://cloud.189.cn/)      | 🟢    | [cloud189_accounts.js](./config/cloud189_accounts.js) |
+| [夸克网盘](https://pan.quark.cn/)      | 🟢    | `QUARK_COOKIE ` 多账号 `&` 隔开                       |
 | [GLADOS](https://glados.rocks/console) | 🟢    | `GLADOS_COOKIE` 多账号 `&` 隔开                       |
 | [HIFIN](https://www.hifini.com/)       | 🟢    | `HIFIN_COOKIE` 多账号 `&` 隔开                        |
-| [V2FREE](https://v2free.net/)          | 🔴    | [v2free_accounts.js](./config/v2free_accounts.js)     |
 | [IKUUU](https://ikuuu.org/)            | 🟢    | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
+| [V2FREE](https://v2free.net/)          | 🔴    | [v2free_accounts.js](./config/v2free_accounts.js)     |
 | [TLY](https://tly31.com/)              | ⭕    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
 
 > **获取 REFRESH_TOKENS 的方法**
