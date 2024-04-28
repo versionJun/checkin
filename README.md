@@ -3,7 +3,7 @@
 | GP_TOKEN       | 在 Action 中运行时更新 Repository secrets           |
 | PUSHPLUS_TOKEN | [pushplus](http://www.pushplus.plus) Token 消息推送 |
 
-| 任务名称                               | 状态 | 参数                                                  |
+| 任务                                   | 状态 | 参数                                                  |
 | -------------------------------------- | ---- | ----------------------------------------------------- |
 | [阿里云盘](https://www.alipan.com/)    | ✅    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
 | [天翼云盘](https://cloud.189.cn/)      | ✅    | [cloud189_accounts.js](./config/cloud189_accounts.js) |
