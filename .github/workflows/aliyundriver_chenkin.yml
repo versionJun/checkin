@@ -1,4 +1,4 @@
-name: "aliyundriver_chenkin"
+name: "aliyundriver_checkin"
 
 on:
   schedule:
@@ -41,7 +41,7 @@ jobs:
           # 在 Action 中运行时更新 Repository secrets
           GP_TOKEN: ${{ secrets.GP_TOKEN }}
         run: |
-          node ./task/aliyundriver_chenkin.js
+          node ./task/aliyundriver_checkin.js
           
       - name: Delete old workflow run using Github Token
         uses: Mattraks/delete-workflow-runs@v2
@@ -50,4 +50,4 @@ jobs:
           repository: ${{ github.repository }}
           retain_days: 0
           keep_minimum_runs: 0
-          delete_workflow_pattern: "aliyundriver_chenkin"
+          delete_workflow_pattern: "aliyundriver_checkin"
