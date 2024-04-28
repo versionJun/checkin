@@ -1,4 +1,4 @@
-name: "hifin_chenkin"
+name: "hifin_checkin"
 
 on:
   schedule:
@@ -36,7 +36,7 @@ jobs:
           # cookie, 多个账号 & 隔开
           HIFIN_COOKIE: ${{ secrets.HIFIN_COOKIE }}
         run: |
-          node ./task/hifin_chenkin.js
+          node ./task/hifin_checkin.js
 
       - name: Delete old workflow run using Github Token
         uses: Mattraks/delete-workflow-runs@v2
@@ -45,4 +45,4 @@ jobs:
           repository: ${{ github.repository }}
           retain_days: 0
           keep_minimum_runs: 0
-          delete_workflow_pattern: "hifin_chenkin"
+          delete_workflow_pattern: "hifin_checkin"
