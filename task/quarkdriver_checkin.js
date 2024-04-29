@@ -111,7 +111,7 @@ function goSign(cookie){
                 logger.info(`今日已签到获取${today_sign_rewards_mb}MB`)
             } else {
                 const signResult = await goSign(cookie)
-                const sign_daily_reward_mb = signResult.data.sign_daily_reward / 1024 / 1024
+                const sign_daily_reward_mb = signResult.sign_daily_reward / 1024 / 1024
                 logger.info(`今日签到获取${sign_daily_reward_mb}MB`)
             }
         } catch (error) {
