@@ -34,9 +34,3 @@
 - @jinchaofs: [jinchaofs/v2free-checkin](https://github.com/jinchaofs/v2free-checkin/)
 - @lukesyy: [lukesyy/glados_automation](https://github.com/lukesyy/glados_automation)
 - @HeiDaotu: [HeiDaotu/WFRobertQL](https://github.com/HeiDaotu/WFRobertQL)
-
-https://github.com/versionJun/checkin/blob/main/.github/workflows/aliyundriver_checkin.yml
-
-https://github.com/versionJun/checkin/blob/main/.github/workflows/aliyundriver_chenkin.yml
-
-https://github.com/versionJun/checkin/blob/main/.github/workflows/aliyundriver_chenkin.yml
