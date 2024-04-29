@@ -5,7 +5,7 @@
 
 | 任务                                                                                                                                                        | 状态 | 参数                                                  |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ----------------------------------------------------- |
-| [阿里云盘](https://www.alipan.com/)<sup>[[task](./task/aliyundriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/aliyundriver_chenkin.yml)]</sup> | ✅    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
+| [阿里云盘](https://www.alipan.com/)<sup>[[task](./task/aliyundriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/aliyundriver_checkin.yml)]</sup> | ✅    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
 | [天翼云盘](https://cloud.189.cn/)<sup>[[task](./task/cloud189_checkin.js)]</sup><sup>[[workflow](./.github/workflows/cloud189_checkin.yml)]</sup>           | ✅    | [cloud189_accounts.js](./config/cloud189_accounts.js) |
 | [夸克网盘](https://pan.quark.cn/)<sup>[[task](./task/quarkdriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/quarkdriver_checkin.yml)]</sup>     | ✅    | `QUARK_COOKIE ` 多账号 `&` 隔开                       |
 | [GLADOS](https://glados.rocks/console)<sup>[[task](./task/glados_checkin.js)]</sup><sup>[[workflow](./.github/workflows/glados_checkin.yml)]</sup>          | ✅    | `GLADOS_COOKIE` 多账号 `&` 隔开                       |
@@ -34,3 +34,9 @@
 - @jinchaofs: [jinchaofs/v2free-checkin](https://github.com/jinchaofs/v2free-checkin/)
 - @lukesyy: [lukesyy/glados_automation](https://github.com/lukesyy/glados_automation)
 - @HeiDaotu: [HeiDaotu/WFRobertQL](https://github.com/HeiDaotu/WFRobertQL)
+
+https://github.com/versionJun/checkin/blob/main/.github/workflows/aliyundriver_checkin.yml
+
+https://github.com/versionJun/checkin/blob/main/.github/workflows/aliyundriver_chenkin.yml
+
+https://github.com/versionJun/checkin/blob/main/.github/workflows/aliyundriver_chenkin.yml
