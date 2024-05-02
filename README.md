@@ -33,4 +33,5 @@
 - @mrabit: [mrabit/aliyundriveDailyCheck](https://github.com/mrabit/aliyundriveDailyCheck/)
 - @jinchaofs: [jinchaofs/v2free-checkin](https://github.com/jinchaofs/v2free-checkin/)
 - @lukesyy: [lukesyy/glados_automation](https://github.com/lukesyy/glados_automation)
+- @wes-lin: [wes-lin/Cloud189Checkin](https://github.com/wes-lin/Cloud189Checkin)
 - @HeiDaotu: [HeiDaotu/WFRobertQL](https://github.com/HeiDaotu/WFRobertQL)
