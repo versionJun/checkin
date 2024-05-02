@@ -9,6 +9,7 @@ const accounts = require('../config/cloud189_accounts.js')
 const { sent_message_by_pushplus } = require('../utils/message.js')
 const { dayjs } = require('../utils/dayjs.js')
 const { logger, getLog4jsStr } = require('../utils/log4js')
+const crypto = require("crypto")
 
 
 const config = {
@@ -44,11 +45,26 @@ const USERSIGN_URL = `https://cloud.189.cn/mkt/userSign.action?rand=${new Date()
 // 天天抽红包
 const DRAWPRIZEMARKETDETAILS_URL = [
     `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_SIGNIN&activityId=ACT_SIGNIN`,
-    // `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_SIGNIN_PHOTOS&activityId=ACT_SIGNIN`,
-    // `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_2022_FLDFS_KJ&activityId=ACT_SIGNIN`,
+    `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_SIGNIN_PHOTOS&activityId=ACT_SIGNIN`,
+    `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_2022_FLDFS_KJ&activityId=ACT_SIGNIN`,
 ]
 
-axios.defaults.timeout = 5 * 1000 
+// sessionKey
+const GETUSERBRIEFINFO_URL = `https://cloud.189.cn/api/portal/v2/getUserBriefInfo.action`
+
+// accessToken
+const GETACCESSTOKENBYSSKEY_URL = `https://cloud.189.cn/api/open/oauth2/getAccessTokenBySsKey.action`
+
+// familyId
+const GETFAMILYLIST_URL = `https://api.cloud.189.cn/open/family/manage/getFamilyList.action`
+
+// 家庭容量任务签到
+const EXEFAMILYUSERSIGN_URL = `https://api.cloud.189.cn/open/family/manage/exeFamilyUserSign.action`
+
+// 获取用户网盘容量信息
+const GETUSERSIZEINFO_URL = `https://cloud.189.cn/api/portal/getUserSizeInfo.action`
+
+axios.defaults.timeout = 5 * 1000
 axios.defaults.retry = 5
 
 function goEncryptConf(){
@@ -182,6 +198,8 @@ function goToUrl(toUrl, cookieJar){
     })
     .then(res => {
 
+        // console.log(res)
+
     })
     .catch(error => {
         console.error(error)
@@ -195,7 +213,7 @@ function goUserSign(cookieJar){
         jar: cookieJar
     })
     .then(res => {
-        
+
         logger.info(`${res.data.isSign ? '已经签到' : '签到成功'}(${dayjs.tz(dayjs(res.data.signTime)).format('YYYY-MM-DD HH:mm:ss')}),获得${res.data.netdiskBonus}M空间`)
 
     })
@@ -213,12 +231,12 @@ async function goDrawPrizeMarketDetails(cookieJar){
             isUrlExcludeParams: false
         })
         .then(res => {
-            
+            console.log(res.data)
             if (res.data.errorCode === 'User_Not_Chance') 
                 logger.info(`第${index+1}次抽奖失败,次数不足`)
             else
                 logger.info(`第${index+1}次抽奖成功,抽奖获得${res.data.prizeName}`)
-
+    
         })
         .catch(error => {
             console.error(error)
@@ -227,6 +245,156 @@ async function goDrawPrizeMarketDetails(cookieJar){
     }
 }
 
+function goGetUserBriefInfo(cookieJar){
+    return axios(GETUSERBRIEFINFO_URL, {
+        method: 'GET',
+        jar: cookieJar
+    })
+    .then(res => {
+
+        return res.data
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goGetUserBriefInfo->${error}`) 
+    })
+}
+
+const parameter = (data) => {
+    if (!data) {
+        return {};
+    }
+    const e = Object.entries(data).map((t) => t.join("="));
+    e.sort((a, b) => (a > b ? 1 : a < b ? -1 : 0));
+    return e.join("&");
+}
+  
+const getSignature = (data) => {
+    const sig = parameter(data);
+    return crypto.createHash("md5").update(sig).digest("hex");
+}
+function goGetAccessTokenBySsKey(cookieJar, sessionKey){
+    const appkey = "600100422"
+    const time = String(Date.now())
+    const signature = getSignature({
+        sessionKey,
+        Timestamp: time,
+        AppKey: appkey,
+    })
+    return axios(GETACCESSTOKENBYSSKEY_URL, {
+        method: 'GET',
+        headers: {
+            'Sign-Type': '1',
+            'Signature': signature,
+            'Timestamp': time,
+            'Appkey': appkey
+        },
+        params: {
+            sessionKey: sessionKey
+        },
+        jar: cookieJar
+    })
+    .then(res => {
+
+        return res.data
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goGetAccessTokenBySsKey->${error}`) 
+    })
+}
+
+function goGetFamilyList(cookieJar, accessToken){
+    const time = String(Date.now())
+    const signature = getSignature({
+        Timestamp: time,
+        AccessToken: accessToken,
+    })
+    return axios(GETFAMILYLIST_URL, {
+        method: 'GET',
+        headers: {
+            'Sign-Type': '1',
+            'Signature': signature,
+            'Timestamp': time,
+            'Accesstoken': accessToken,
+            'Accept': 'application/json;charset=UTF-8',
+        },
+        jar: cookieJar
+    })
+    .then(res => {
+
+        return res.data
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goGetFamilyList->${error}`) 
+    })
+}
+
+function goExeFamilyUserSign(cookieJar, familyId, accessToken){
+    const time = String(Date.now())
+    const signature = getSignature({
+        familyId,
+        Timestamp: time,
+        AccessToken: accessToken,
+    })
+    return axios(EXEFAMILYUSERSIGN_URL, {
+        method: 'GET',
+        headers: {
+            'Sign-Type': '1',
+            'Signature': signature,
+            'Timestamp': time,
+            'Accesstoken': accessToken,
+            'Accept': 'application/json;charset=UTF-8',
+        },
+        params: {
+            'familyId': familyId
+        },
+        jar: cookieJar
+    })
+    .then(res => {
+
+        return res.data
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goExeFamilyUserSign->${error}`) 
+    })
+}
+
+
+async function doFamilyTask(cookieJar){
+    const { sessionKey } = await goGetUserBriefInfo(cookieJar)
+    const { accessToken } = await goGetAccessTokenBySsKey(cookieJar, sessionKey)
+    const { familyInfoResp } = await goGetFamilyList(cookieJar, accessToken)
+    if (familyInfoResp) {
+        for (let index = 0; index < familyInfoResp.length; index += 1) {
+            const { familyId } = familyInfoResp[index]
+            const res = await goExeFamilyUserSign(cookieJar, familyId, accessToken)
+            logger.info(`家庭任务:${res.signStatus ? "已经签到过了" : "签到成功"}(${res.signTime}),签到获得${res.bonusSpace}M空间`)
+        }
+    }
+}
+function goGetUserSizeInfo(cookieJar){
+    return axios(GETUSERSIZEINFO_URL, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+        },
+        jar: cookieJar
+    })
+    .then(res => {
+
+        const userTotaiSize = (res.data.cloudCapacityInfo.totalSize / 1024 / 1024 / 1024).toFixed(2)
+        const familyTotaiSize = (res.data.familyCapacityInfo.totalSize / 1024 / 1024 / 1024).toFixed(2)
+
+        logger.info(`个人总容量:${userTotaiSize}G,家庭总容量:${familyTotaiSize}G`)
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`goGetUserSizeInfo->${error}`) 
+    })
+}
 
 !(async () => {
 
@@ -244,6 +412,8 @@ async function goDrawPrizeMarketDetails(cookieJar){
             await goToUrl(toUrl, cookieJar)
             await goUserSign(cookieJar)
             await goDrawPrizeMarketDetails(cookieJar)
+            await doFamilyTask(cookieJar)
+            await goGetUserSizeInfo(cookieJar)
         } catch(error) {
             console.error(error)
             logger.error(error)
@@ -252,6 +422,8 @@ async function goDrawPrizeMarketDetails(cookieJar){
         }
     }
     
+    // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
+
     await sent_message_by_pushplus({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
         message: getLog4jsStr('INFO') 
