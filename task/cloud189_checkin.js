@@ -231,6 +231,7 @@ async function goDrawPrizeMarketDetails(cookieJar){
             isUrlExcludeParams: false
         })
         .then(res => {
+            
             if (res.data.prizeName) 
                 logger.info(`第${index+1}次抽奖成功,抽奖获得${res.data.prizeName}`)
             else if (res.data.errorCode === 'User_Not_Chance') 
