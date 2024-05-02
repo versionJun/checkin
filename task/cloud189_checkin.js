@@ -260,19 +260,36 @@ function goGetUserBriefInfo(cookieJar){
     })
 }
 
+/**
+ * 将给定的数据对象转换为查询字符串格式。
+ * @param {Object} data - 包含要转换为查询字符串的键值对的数据对象。
+ * @returns {string} - 返回格式化的查询字符串，如果输入数据为空则返回空对象。
+ */
 const parameter = (data) => {
+    // 当传入的数据为空时，直接返回一个空对象
     if (!data) {
         return {};
     }
+    // 将数据对象转换为键值对数组，并通过“=”连接键和值
     const e = Object.entries(data).map((t) => t.join("="));
+    // 对键值对数组按字典顺序进行排序
     e.sort((a, b) => (a > b ? 1 : a < b ? -1 : 0));
+    // 将排序后的键值对数组通过“&”连接为查询字符串
     return e.join("&");
 }
   
+/**
+ * 生成数据的签名
+ * @param {Object} data - 需要签名的数据对象。
+ * @returns {string} 返回经过MD5加密算法计算出的签名字符串。
+ */
 const getSignature = (data) => {
-    const sig = parameter(data);
+    // 通过parameter函数处理数据，生成签名字符串
+    const sig = parameter(data)
+    // 使用MD5算法对签名字符串进行加密，然后返回加密结果的16进制字符串
     return crypto.createHash("md5").update(sig).digest("hex");
 }
+
 function goGetAccessTokenBySsKey(cookieJar, sessionKey){
     const appkey = "600100422"
     const time = String(Date.now())
@@ -362,7 +379,6 @@ function goExeFamilyUserSign(cookieJar, familyId, accessToken){
     })
 }
 
-
 async function doFamilyTask(cookieJar){
     const { sessionKey } = await goGetUserBriefInfo(cookieJar)
     const { accessToken } = await goGetAccessTokenBySsKey(cookieJar, sessionKey)
@@ -375,6 +391,7 @@ async function doFamilyTask(cookieJar){
         }
     }
 }
+
 function goGetUserSizeInfo(cookieJar){
     return axios(GETUSERSIZEINFO_URL, {
         method: 'GET',
