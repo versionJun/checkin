@@ -44,8 +44,8 @@ const USERSIGN_URL = `https://cloud.189.cn/mkt/userSign.action?rand=${new Date()
 // 天天抽红包
 const DRAWPRIZEMARKETDETAILS_URL = [
     `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_SIGNIN&activityId=ACT_SIGNIN`,
-    `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_SIGNIN_PHOTOS&activityId=ACT_SIGNIN`,
-    `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_2022_FLDFS_KJ&activityId=ACT_SIGNIN`,
+    // `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_SIGNIN_PHOTOS&activityId=ACT_SIGNIN`,
+    // `https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_2022_FLDFS_KJ&activityId=ACT_SIGNIN`,
 ]
 
 axios.defaults.timeout = 5 * 1000 
