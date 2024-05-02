@@ -231,11 +231,12 @@ async function goDrawPrizeMarketDetails(cookieJar){
             isUrlExcludeParams: false
         })
         .then(res => {
-            console.log(res.data)
-            if (res.data.errorCode === 'User_Not_Chance') 
-                logger.info(`第${index+1}次抽奖失败,次数不足`)
-            else
+            if (res.data.prizeName) 
                 logger.info(`第${index+1}次抽奖成功,抽奖获得${res.data.prizeName}`)
+            else if (res.data.errorCode === 'User_Not_Chance') 
+                logger.info(`第${index+1}次抽奖失败,次数不足`)
+            else 
+                logger.info(`第${index+1}次抽奖失败,(by:${JSON.stringify(res.data)})`)
     
         })
         .catch(error => {
