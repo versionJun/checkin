@@ -67,6 +67,8 @@ const GETUSERSIZEINFO_URL = `https://cloud.189.cn/api/portal/getUserSizeInfo.act
 axios.defaults.timeout = 5 * 1000
 axios.defaults.retry = 5
 
+const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration))
+
 function goEncryptConf(){
     if (config.pre && config.pubKey)
         return { 
@@ -244,6 +246,8 @@ async function goDrawPrizeMarketDetails(cookieJar){
             console.error(error)
             return Promise.reject(`goDrawPrizeMarketDetails->${error}`)
         })
+
+        await sleep(5000); // 延迟5秒
     }
 }
 
