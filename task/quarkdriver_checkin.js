@@ -62,8 +62,7 @@ function goState(cookie){
     })
     .then(res => {
 
-        return res.data.data.cap_sign
-
+        return res.data.data
     })
     .catch(error => {
         console.error(error)
@@ -85,7 +84,6 @@ function goSign(cookie){
     .then(res => {
     
         return res.data.data
-      
     })
     .catch(error => {
         console.error(error)
@@ -105,8 +103,8 @@ function goSign(cookie){
             const { nickname } = await goLogin(cookie)
             logger.addContext("user", `账号${index}(${nickname})`)
             const stateResult = await goState(cookie)
-            if (stateResult.sign_daily) {
-                const today_sign_rewards = stateResult.sign_rewards[stateResult.sign_progress-2]
+            if (stateResult.cap_sign.sign_daily) {
+                const today_sign_rewards = stateResult.cap_sign.sign_rewards[stateResult.cap_sign.sign_progress-1]
                 const today_sign_rewards_mb = today_sign_rewards.reward_cap / 1024 / 1024
                 logger.info(`今日已签到获取${today_sign_rewards_mb}MB`)
             } else {
