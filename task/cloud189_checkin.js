@@ -244,7 +244,7 @@ async function goDrawPrizeMarketDetails(cookieJar){
         })
         .catch(error => {
             console.error(error)
-            return Promise.reject(`goDrawPrizeMarketDetails->${error}`)
+            logger.error(`goDrawPrizeMarketDetails->${error}`)
         })
 
         await sleep(5000); // 延迟5秒
