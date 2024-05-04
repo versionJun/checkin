@@ -91,7 +91,7 @@ function goSign(cookie){
         if (error.response && error.response.data) {
             const { code, message } = error.response.data
             if (code === 44210 && message === 'cap_growth_sign_repeat') 
-                errorMsg.push('重复签到')
+                errorMsg.push('不可重复签到')
             else 
                 errorMsg.push(`${JSON.stringify(error.response.data)}`)
         } else {
