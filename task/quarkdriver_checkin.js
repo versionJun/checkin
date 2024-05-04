@@ -87,7 +87,17 @@ function goSign(cookie){
     })
     .catch(error => {
         console.error(error)
-        return Promise.reject(`goSign->${error}`)
+        const errorMsg = ['goSign->']
+        if (error.response && error.response.data) {
+            const { code, message } = error.response.data
+            if (code === 44210 && message === 'cap_growth_sign_repeat') 
+                errorMsg.push('重复签到')
+            else 
+                errorMsg.push(`${JSON.stringify(error.response.data)}`)
+        } else {
+            errorMsg.push(`${error}`)
+        }
+        return Promise.reject(errorMsg.join(''))
     })
 }
 
