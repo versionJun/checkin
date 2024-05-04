@@ -27,7 +27,7 @@ function goCheckin(cookie){
     return axios(`${CHECKIN_URL}`, {
         method: 'POST',
         headers: {
-            'Cookie': cookie,
+            'Cookie': cookie
         }
     })
     .then(res => {
@@ -62,12 +62,12 @@ function goCheckin(cookie){
         }
     }
 
-    // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
+    console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
 
-    await sent_message_by_pushplus({ 
-        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: getLog4jsStr('INFO')
-    });
+    // await sent_message_by_pushplus({ 
+    //     title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
+    //     message: getLog4jsStr('INFO')
+    // });
 
 })()
 
