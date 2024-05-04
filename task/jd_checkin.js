@@ -35,8 +35,13 @@ function goCheckin(cookie){
 
         if (res.data.code !== '0') return Promise.reject(`签到失败(by:${res.data.errorMessage})`)
             
-        logger.info(`${res.data.data.dailyAward.title}${res.data.data.dailyAward.subTitle}(京豆:${res.data.data.dailyAward.beanAward.beanCount}) (连续签到天数:${res.data.data.continuousDays})`)
-
+        const msg = []
+        msg.push(`${res.data.data.dailyAward.title}${res.data.data.dailyAward.subTitle}`) 
+        msg.push(`(京豆:${res.data.data.dailyAward.beanAward.beanCount})`)
+        msg.push(`(连续签到天数:${res.data.data.continuousDays})`)
+        const totalUserBean = res.data.data.totalUserBean
+        if (totalUserBean) msg.push(`(总京豆:${totalUserBean})`)
+        logger.info(msg.join(''))
     })
     .catch(error => {
         console.error(error)
