@@ -106,7 +106,8 @@ function goSign(cookie){
             if (stateResult.cap_sign.sign_daily) {
                 const today_sign_rewards = stateResult.cap_sign.sign_rewards[stateResult.cap_sign.sign_progress-1]
                 const today_sign_rewards_mb = today_sign_rewards.reward_cap / 1024 / 1024
-                logger.info(`今日已签到获取${today_sign_rewards_mb}MB`)
+                const total_capacity_g = (stateResult.total_capacity / 1024 / 1024 / 1024).toFixed(1)
+                logger.info(`今日已签到获取${today_sign_rewards_mb}MB (总容量: ${total_capacity_g}G)`)
             } else {
                 const signResult = await goSign(cookie)
                 const sign_daily_reward_mb = signResult.sign_daily_reward / 1024 / 1024
