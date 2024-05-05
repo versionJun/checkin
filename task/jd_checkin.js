@@ -36,11 +36,20 @@ function goCheckin(cookie){
         if (res.data.code !== '0') return Promise.reject(`签到失败(by:${res.data.errorMessage})`)
             
         const msg = []
-        msg.push(`${res.data.data.dailyAward.title}${res.data.data.dailyAward.subTitle}`) 
-        msg.push(`(京豆:${res.data.data.dailyAward.beanAward.beanCount})`)
-        msg.push(`(连续签到天数:${res.data.data.continuousDays})`)
+        const dailyAward = res.data.data.dailyAward || res.data.data.continuityAward || res.data.data.newUserAward
+        if (dailyAward.title) 
+            msg.push(`${dailyAward.title}`) 
+        if (dailyAward.subTitle) 
+            msg.push(`${dailyAward.subTitle}`) 
+        const beanCount = dailyAward.beanAward.beanCount || dailyAward.awardList[0].beanCount
+        if (beanCount) 
+            msg.push(`(京豆:${beanCount})`)
+        const continuousDays = res.data.data.continuousDays
+        if (continuousDays)
+            msg.push(`(连续签到天数:${continuousDays})`)
         const totalUserBean = res.data.data.totalUserBean
-        if (totalUserBean) msg.push(`(总京豆:${totalUserBean})`)
+        if (totalUserBean) 
+            msg.push(`(总京豆:${totalUserBean})`)
         logger.info(msg.join(''))
     })
     .catch(error => {
