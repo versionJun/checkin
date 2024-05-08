@@ -34,7 +34,7 @@ function printRequestDurationInfo(config){
     const logInfo = []
     logInfo.push(`${config.method}=>${config.isUrlExcludeParams ? urlExcludeParams(config.url) : config.url}`)
     logInfo.push(`requestDuration=${requestDuration}s`)
-    logger.debug(logInfo.join(' '))
+    logger.trace(logInfo.join(' '))
 }
 
 // 响应拦截器  
