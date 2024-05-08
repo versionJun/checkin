@@ -42,11 +42,9 @@ function goBase(cookie){
 
         const $ = cheerio.load(d.data)
 
-        const username_element = $('.nav-item.username')
+        const username = $('.nav-item.username').text().trim()
 
-        if (!username_element) return Promise.reject('cookie已过期或无效')
-
-        const username = username_element.text().trim()
+        if (!username) return Promise.reject('cookie已过期或无效')
 
         const signReg = /(?<=var sign = ").*?(?=";)/g
 
@@ -144,9 +142,10 @@ function goMy(cookie){
 
     // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
 
-    await sent_message_by_pushplus({ 
-        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: getLog4jsStr('INFO')
-    });
+    if (getLog4jsStr('ERROR') != '')
+        await sent_message_by_pushplus({ 
+            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
+            message: getLog4jsStr('INFO')
+        });
 
 })()
