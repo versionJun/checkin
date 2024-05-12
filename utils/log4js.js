@@ -46,7 +46,7 @@ log4js.configure({
     },
 });
 
-const levelStrArr = [ 'ALL', 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'MARK', 'OFF' ]
+const levelStrArr = [...log4js.levels.levels].sort((a, b) => a.level - b.level).map((value) => value.levelStr)
 
 const getLevelStrArrIndex = (levelStr) => { return levelStrArr.findIndex(value => value == levelStr) }
 
