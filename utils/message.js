@@ -6,6 +6,9 @@ const PUSHPLUS_TOKEN = process.env.PUSHPLUS_TOKEN
 // server酱
 const SCT_SENDKEY = process.env.SCT_SENDKEY
 
+// 是定时触发任务
+const IS_SCHEDULE = process.env.IS_SCHEDULE || false
+
 /**
  * 发生pusplus 消息 
  * 文档：http://www.pushplus.plus/doc/guide/api.html
@@ -17,6 +20,11 @@ const SCT_SENDKEY = process.env.SCT_SENDKEY
  */
 async function sent_message_by_pushplus(params) {
 
+    if (!IS_SCHEDULE) {
+        console.log(`非定时触发任务, 跳过推送\n${JSON.stringify(params)}`)
+        return;
+    }
+    
     if (!PUSHPLUS_TOKEN) {
         console.error("未获取到 PUSHPLUS_TOKEN, 取消推送")
         return;
