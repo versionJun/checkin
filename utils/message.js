@@ -9,6 +9,11 @@ const SCT_SENDKEY = process.env.SCT_SENDKEY
 // 是定时触发任务
 const IS_SCHEDULE = process.env.IS_SCHEDULE || false
 
+
+console.log(process.env.IS_SCHEDULE)
+console.log(IS_SCHEDULE)
+
+
 /**
  * 发生pusplus 消息 
  * 文档：http://www.pushplus.plus/doc/guide/api.html
