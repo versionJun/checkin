@@ -11,8 +11,10 @@ const IS_SCHEDULE = process.env.IS_SCHEDULE || false
 
 
 console.log(process.env.IS_SCHEDULE)
-console.log(IS_SCHEDULE)
+console.log(typeof process.env.IS_SCHEDULE)
 
+console.log(IS_SCHEDULE)
+console.log(typeof IS_SCHEDULE)
 
 /**
  * 发生pusplus 消息 
