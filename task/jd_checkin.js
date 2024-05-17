@@ -34,7 +34,7 @@ function goCheckin(cookie){
     .then(res => {
         logger.debug(`${JSON.stringify(res.data)}`)
 
-        if (res.data.code !== '0') return Promise.reject(`签到失败(by:${res.data.errorMessage})`)
+        if (res.data.code !== '0') return Promise.reject(`签到失败(by:${JSON.stringify(res.data)})`)
             
         const msg = []
         const dailyAward = res.data.data.dailyAward || res.data.data.continuityAward || res.data.data.newUserAward
