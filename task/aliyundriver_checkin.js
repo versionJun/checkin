@@ -29,7 +29,7 @@ function goToken(refresh_token) {
         return res.data
     })
     .catch(error => {
-        const errorMsg = ['goToken->']
+        const errorMsg = [`${arguments.callee.name}->`]
         if (error.response && error.response.data) {
             logger.warn(`error.response.data=${JSON.stringify(error.response.data)}`)
             const { code, message } = error.response.data
@@ -101,7 +101,7 @@ function goSignInList(access_token) {
     })
     .catch(error => {
         console.error(error)
-        return Promise.reject(`goSignInList->${error}`)
+        return Promise.reject(`${arguments.callee.name}->${error}`)
     })
 }
 
@@ -118,17 +118,26 @@ function goSginInReward(access_token, signInDay) {
         headers: {
             authorization: access_token,
             'Content-Type': 'application/json'
+        },
+        validateStatus: function (status) {
+            // return status >= 200 && status < 300; // 默认值
+            return true
         }
     })
     .then(res => {
-        if (!res.data.success) {
-            return Promise.reject(res.data.message)
-        }
+        // logger.debug(`${JSON.stringify(res.data)}`)
+        if (!res.data.success) 
+            return Promise.reject(`${JSON.stringify(res.data)}`)
         return res.data.result
     })
     .catch(error => {
         console.error(error)
-        return Promise.reject(`goSginInReward->${error}`)
+        const errorMsg = [`${arguments.callee.name}->`]
+        if (error.response && error.response.data) 
+            errorMsg.push(`${JSON.stringify(error.response.data)}`)
+        else 
+            errorMsg.push(`${error}`)
+        return Promise.reject(errorMsg.join(''))
     })
 }
 
