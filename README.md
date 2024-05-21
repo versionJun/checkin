@@ -38,3 +38,4 @@
 - @wes-lin: [wes-lin/Cloud189Checkin](https://github.com/wes-lin/Cloud189Checkin)
 - @HeiDaotu: [HeiDaotu/WFRobertQL](https://github.com/HeiDaotu/WFRobertQL)
 - @nibabashilkk: [nibabashilkk/alipan_auto_sign](https://github.com/nibabashilkk/alipan_auto_sign)
+- @imoki: [imoki/sign_script](https://github.com/imoki/sign_script)
