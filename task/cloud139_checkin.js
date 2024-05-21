@@ -8,7 +8,7 @@ const Cookie = tough.Cookie
 
 const yun139Url = "https://yun.139.com", caiyunUrl2 = "https://caiyun.feixin.10086.cn", mnoteUrl = "https://mnote.caiyun.feixin.10086.cn";
 
-const encryptPhone = (phone) => { return phone.replace(/^(\S{3})(?:\S*)(\S{4})$/, '$1***$2') }
+const encryptPhone = (phone) => { return phone.replace(/^(\S{3})(?:\S*)(\S{4})$/, '$1****$$2') }
 
 const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration))
 
