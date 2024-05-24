@@ -1,6 +1,7 @@
 const axios = require('axios')
 const { logger } = require('./log4js')
 
+
 const service = axios.create({
     timeout: 10 * 1000,         // 请求超时时间（超时后还未接收到数据，就需要再次发送请求）
     retry: 3,                   // 全局重试请求次数（最多重试几次请求）
@@ -24,6 +25,26 @@ service.interceptors.request.use(
     }
 )
 
+// 响应拦截器  
+service.interceptors.response.use(async (response) => {
+    
+        printRequestDurationInfo(response.config)
+
+        if(response.config?.retryCondition?.(response.data)) await handleRetry(response)
+
+        return Promise.resolve(response);
+
+    }, async (error) => {
+
+        printRequestDurationInfo(error.config)
+
+        // 如果有响应内容，就直接返回错误信息，不再发送请求
+        if (!(error.response && error.response.data))  await handleRetry(error)
+
+        return Promise.reject(error)
+    }
+)
+
 const urlExcludeParams = (url) => { return url.replace(/^([^\?]*).*$/, '$1') }
 
 function printRequestDurationInfo(config){
@@ -37,57 +58,39 @@ function printRequestDurationInfo(config){
     logger.trace(logInfo.join(' '))
 }
 
-// 响应拦截器  
-service.interceptors.response.use((response) => {
+function handleRetry(r){
 
-        printRequestDurationInfo(response.config)
+    const axiosConfig = r.config
 
-        return Promise.resolve(response);
+    // If config does not exist or the retry option is not set, reject
+    if (!axiosConfig || !axiosConfig.retry) return false
 
-    }, (error) => {
+    // __retryCount用来记录当前是第几次发送请求
+    axiosConfig.__retryCount = axiosConfig.__retryCount || 0
 
-        const axiosConfig = error.config
+    // 如果当前发送的请求大于等于设置好的请求次数时，不再发送请求
+    if (axiosConfig.__retryCount >= axiosConfig.retry) return false
 
-        printRequestDurationInfo(axiosConfig)
+    // 记录请求次数+1
+    axiosConfig.__retryCount += 1
 
-        // If config does not exist or the retry option is not set, reject
-        if (!axiosConfig || !axiosConfig.retry) return Promise.reject(error)
+    // 设置请求间隔 指数增长的重试策略 下一次重试的延迟时间会翻倍
+    axiosConfig.retryDelay = Math.pow(2, axiosConfig.__retryCount) * 1000;
 
-        // 如果有响应内容，就直接返回错误信息，不再发送请求
-        if (error.response && error.response.data) return Promise.reject(error)
+    if (r.message && !(/^timeout of \d*ms exceeded$/).test(r.message)) console.error(r)
 
-        // __retryCount用来记录当前是第几次发送请求
-        axiosConfig.__retryCount = axiosConfig.__retryCount || 0
-        
-        // 如果当前发送的请求大于等于设置好的请求次数时，不再发送请求
-        if (axiosConfig.__retryCount >= axiosConfig.retry) return Promise.reject(error)
-        
-        // 记录请求次数+1
-        axiosConfig.__retryCount += 1
-        
-        // 设置请求间隔 在发送下一次请求之前停留一段时间，时间为重试请求间隔
-        const backoff = new Promise(function (resolve) {
-            if (error.message && !(/^timeout of \d*ms exceeded$/).test(error.message)) console.error(error)
-            const retryDelay =  axiosConfig.retryDelay || 1
-            const errorInfo = []
-            errorInfo.push(`__retryCount=${axiosConfig.__retryCount}`)
-            // errorInfo.push(`retryDelay=${retryDelay}`)
-            errorInfo.push(`${axiosConfig.method}=>${axiosConfig.isUrlExcludeParams ? urlExcludeParams(axiosConfig.url) : axiosConfig.url}`)
-            // if (axiosConfig.params) errorInfo.push(`params=${axiosConfig.params}`)
-            // if (axiosConfig.data) errorInfo.push(`data=${axiosConfig.data}`)
-            if (error.message) errorInfo.push(`error.message=${error.message}`)
-            if (error.cause) errorInfo.push(`error.cause=${JSON.stringify(error.cause)}`)
-            logger.warn(errorInfo.join(' '))
-            setTimeout(function () {
-                resolve()
-            }, retryDelay)
-        })
+    const info = []
+    info.push(`__retryCount=${axiosConfig.__retryCount}`)
+    info.push(`retryDelay=${(axiosConfig.retryDelay / 1000)}s`)
+    info.push(`${axiosConfig.method}=>${axiosConfig.isUrlExcludeParams ? urlExcludeParams(axiosConfig.url) : axiosConfig.url}`)
+    // if (axiosConfig.params) info.push(`params=${axiosConfig.params}`)
+    // if (axiosConfig.data) info.push(`data=${axiosConfig.data}`)
+    if (r.data) info.push(`response.data=${JSON.stringify(r.data)}`)
+    if (r.message) info.push(`error.message=${r.message}`)
+    if (r.cause) info.push(`error.cause=${JSON.stringify(r.cause)}`)
+    logger.warn(info.join(' '))
 
-        // 再次发送请求
-        return backoff.then(function () {
-            return service(axiosConfig)
-        })
-    }
-)
+    return new Promise((resolve) => setTimeout(() => resolve(service(axiosConfig)), axiosConfig.retryDelay))
+}
 
 module.exports = service
