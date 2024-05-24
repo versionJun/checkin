@@ -29,6 +29,9 @@ function goCheckin(cookie){
         headers: {
             'Cookie': cookie,
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+        },
+        retryCondition: function(data){
+            return data.code === '402' && data.message === '活动现在挤不进去呀，待会再来试试吧'
         }
     })
     .then(res => {
