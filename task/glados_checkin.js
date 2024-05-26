@@ -1,3 +1,4 @@
+const accounts = require('../config/glados_accounts.js')
 const axios = require('../utils/axios.js')
 const path = require('path')
 const { sent_message_by_pushplus } = require('../utils/message.js')
@@ -21,14 +22,16 @@ function goCheckin(cookie){
             'Cookie': cookie,
             'User-Agent': UA,
             'Content-Type': 'application/json;charset=UTF-8'
-        }
+        },
     })
     .then(res => {
+        // logger.debug(`${JSON.stringify(res.data)}`)
 
-        // console.log(res.data)
+        if (res.data.code === -2)
+            return Promise.reject(`cookie已过期或无效(by:${JSON.stringify(res.data)})`)
 
-        if (res.data.code === -2 )
-            return Promise.reject(`cookie已过期或无效(by:${res.data.message})`)
+        if ((/error/).test(res.data.message))
+            return Promise.reject(`错误(by:${JSON.stringify(res.data)})`)
 
         return res.data
     })
@@ -47,11 +50,10 @@ function goStatus(cookie){
         }
     })
     .then(res => {
-
-        // console.log(res.data)
+        // logger.debug(`${JSON.stringify(res.data)}`)
 
         if (res.data.code === -2 )
-            return Promise.reject(`cookie已过期或无效(by:${res.data.message})`)
+            return Promise.reject(`cookie已过期或无效(by:${JSON.stringify(res.data)})`)
 
         return res.data
     })
@@ -61,39 +63,17 @@ function goStatus(cookie){
     })
 }
 
-function getGladosCookie() {
-
-    let GLADOS_COOKIE = process.env.GLADOS_COOKIE || ''
-
-    let GLADOS_COOKIE_ARR = []
-
-    if (GLADOS_COOKIE.indexOf('&') > -1)
-        GLADOS_COOKIE_ARR = GLADOS_COOKIE.split(/\s*&\s*/).filter(item => item != '')
-    else if (GLADOS_COOKIE)
-        GLADOS_COOKIE_ARR = [GLADOS_COOKIE]
-
-    if (!GLADOS_COOKIE_ARR.length) {
-        console.error("未获取到GLADOS_COOKIE, 程序终止")
-        process.exit(0);
-    }
-    
-    return GLADOS_COOKIE_ARR
-}
-
 !(async () => {
 
-    const GLADOS_COOKIE_ARR = getGladosCookie()
-
-    for (let index = 0; index < GLADOS_COOKIE_ARR.length; index++) {
-        const cookie = GLADOS_COOKIE_ARR[index]
-        if(!cookie) continue
+    for (let [index, value] of accounts.entries()) {
+        if (!value.cookie) continue
         try {
 
             logger.addContext("user", `账号${index}`)
 
-            const checkin_result = await goCheckin(cookie)
+            const checkin_result = await goCheckin(value.cookie)
 
-            const status_result = await goStatus(cookie)
+            const status_result = await goStatus(value.cookie)
 
             logger.addContext("user", `账号${index}(${encryptEmail(status_result.data.email)})`)
 
