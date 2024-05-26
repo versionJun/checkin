@@ -4,8 +4,8 @@ const { logger } = require('./log4js')
 
 const service = axios.create({
     timeout: 10 * 1000,         // 请求超时时间（超时后还未接收到数据，就需要再次发送请求）
-    retry: 3,                   // 全局重试请求次数（最多重试几次请求）
-    retryDelay: 1 * 1000,       // 全局重试请求间隔
+    retry: 3,                   // 重试请求次数（最多重试几次请求）
+    retryDelay: 1 * 1000,       // 重试请求间隔
     isUrlExcludeParams: true,   
 });
 
@@ -39,7 +39,9 @@ service.interceptors.response.use(async (response) => {
         printRequestDurationInfo(error.config)
 
         // 如果有响应内容，就直接返回错误信息，不再发送请求
-        if (!(error.response && error.response.data))  await handleRetry(error)
+        if (error.response && error.response.data) return Promise.reject(error)
+
+        await handleRetry(error) 
 
         return Promise.reject(error)
     }
@@ -63,13 +65,13 @@ function handleRetry(r){
     const axiosConfig = r.config
 
     // If config does not exist or the retry option is not set, reject
-    if (!axiosConfig || !axiosConfig.retry) return false
+    if (!axiosConfig || !axiosConfig.retry) return 
 
     // __retryCount用来记录当前是第几次发送请求
     axiosConfig.__retryCount = axiosConfig.__retryCount || 0
 
     // 如果当前发送的请求大于等于设置好的请求次数时，不再发送请求
-    if (axiosConfig.__retryCount >= axiosConfig.retry) return false
+    if (axiosConfig.__retryCount >= axiosConfig.retry) return 
 
     // 记录请求次数+1
     axiosConfig.__retryCount += 1
