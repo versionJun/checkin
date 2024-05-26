@@ -12,6 +12,8 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 
 const encryptEmail = (email) => { return email.replace(/^(\S{3})(?:\S*)(\S{2}@\S+)$/, '$1***$2') }
 
+axios.defaults.timeout = 5 * 1000
+
 function goCheckin(cookie){
     return axios(CHECKIN_URL, {
         method: 'POST',
