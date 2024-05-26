@@ -12,6 +12,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: glados
 
     steps:
       - name: Checkout main 
@@ -36,8 +37,10 @@ jobs:
         env:
           # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
-          # cookie, 多个账号 & 隔开
-          GLADOS_COOKIE: ${{ secrets.GLADOS_COOKIE }}
+          # glados
+          GADLOS_COOKIE_0: ${{secrets.GADLOS_COOKIE_0}}
+          GADLOS_COOKIE_1: ${{secrets.GADLOS_COOKIE_1}}
+          GADLOS_COOKIE_2: ${{secrets.GADLOS_COOKIE_2}}
         run: |
           node ./task/glados_checkin.js
 
