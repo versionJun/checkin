@@ -102,7 +102,7 @@ function signTieBa(forum_name, tbs, cookie){
         if (res.data.error_code === 0) {
             logger.info(`[${forum_name}]签到成功, 连续签到：${res.data.user_info.cont_sign_num}天, 累计签到：${res.data.user_info.total_sign_num}天`)
         } else {
-            logger.info(`[${forum_name}]签到失败`)
+            logger.info(`[${forum_name}]签到失败 (by:${JSON.stringify(res.data)})`)
         }
     })
     .catch(error => {
