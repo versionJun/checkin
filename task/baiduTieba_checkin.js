@@ -67,8 +67,8 @@ function getTieBaFollow(cookie){
     })
     .then(res => {
         // logger.debug(`${JSON.stringify(res.data)}`)
-        if (!res.data.data.is_login)
-            return Promise.reject(`登录信息丢失`)
+        if (res.data.no !== 0)
+            return Promise.reject(`获取关注贴吧列表失败 (by:${JSON.stringify(res.data)})`)
         return res.data.data.like_forum.map(forum => forum.forum_name)
     })
     .catch(error => {
