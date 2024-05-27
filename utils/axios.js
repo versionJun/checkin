@@ -14,7 +14,7 @@ service.interceptors.request.use(
     config => {
         // Do something before request is sent
 
-        config.headers['request-startTime'] = new Date().getTime()
+        config['request-startTime'] = new Date().getTime()
 
         return config
     },
@@ -50,7 +50,7 @@ service.interceptors.response.use(async (response) => {
 const urlExcludeParams = (url) => { return url.replace(/^([^\?]*).*$/, '$1') }
 
 function printRequestDurationInfo(config){
-    const startTime = config.headers['request-startTime']
+    const startTime = config['request-startTime']
     const currentTime = new Date().getTime()
     const requestDuration = ((currentTime - startTime) / 1000).toFixed(2)
     
