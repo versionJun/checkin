@@ -21,7 +21,7 @@ async function getJdCookie() {
     return JD_COOKIE_ARR
 }
 
-function goCheckin(cookie){
+function signBean(cookie){
       return axios(`https://api.m.jd.com/client.action`, {
         method: 'POST',
         headers: {
@@ -66,6 +66,40 @@ function goCheckin(cookie){
     })
 }
 
+function signIntegral(cookie){
+    return axios(`https://lop-proxy.jd.com/jiFenApi/signInAndGetReward`, {
+        method: 'POST',
+        headers: {
+            'Cookie': cookie,
+            'User-Agent': 'jdapp',
+            "Referer": "https://pro.m.jd.com",
+            "AppParams": '{"appid":158,"ticket_type":"m"}',
+            "uuid": `${(Math.floor(Date.now() / 1000) * 10 ** 13).toString()}`,
+            "LOP-DN": "jingcai.jd.com"
+        },
+        params: {},
+        data: [{"userNo": "$cooMrdGatewayUid$"}],
+    })
+    .then(res => {
+        logger.debug(`${JSON.stringify(res.data)}`)
+
+        const msg = ['京东快递积分签到:']
+        if (res.data.code !== 1) {
+            msg.push(`${res.data.msg}`)
+        } else {
+            msg.push(`成功`)
+            msg.push(`获得(积分:${res.data.content[0].integralDTO.sendNum})`)
+            msg.push(`(by:${JSON.parse(res.data.content[0].param).title})`)
+        }
+        logger.info(msg.join(''))
+    
+    })
+    .catch(error => {
+        console.error(error)
+        return Promise.reject(`${arguments.callee.name}->${error}`)
+    })
+}
+
 !(async () => {
 
     const JD_COOKIE_ARR = await getJdCookie()
@@ -75,7 +109,8 @@ function goCheckin(cookie){
         if(!cookie) continue
         try {
             logger.addContext("user", `账号${index}`)
-            await goCheckin(cookie)
+            await signBean(cookie)
+            await signIntegral(cookie)
         } catch (error) {
             console.error(error)
             logger.error(error)
