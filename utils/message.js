@@ -21,7 +21,8 @@ const IS_SCHEDULE = process.env.IS_SCHEDULE || 'false'
 async function sent_message_by_pushplus(params) {
 
     if (IS_SCHEDULE === 'false') {
-        console.log(`非定时触发任务, 跳过推送\n${JSON.stringify(params)}`)
+        console.log(`非定时触发任务, 跳过推送`)
+        console.log(params)
         return;
     }
     
