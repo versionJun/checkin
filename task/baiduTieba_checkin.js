@@ -109,7 +109,7 @@ function signTieBa(cookie, forum_name, tbs){
     .then(res => {
         logger.debug(`${JSON.stringify(res.data)}`)
 
-        if (res.data.error_code === 0) {
+        if (res.data.error_code === '0') {
             logger.info(`签到成功, 连续签到:${res.data.user_info.cont_sign_num}天 (${res.data.forum[0].window_conf.text})`)
         } else {
             logger.info(`${res.data.error_msg}`)
