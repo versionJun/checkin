@@ -10,6 +10,7 @@
 | [移动云盘](https://yun.139.com/)<sup>[[task](./task/cloud139_checkin.js)]</sup><sup>[[workflow](./.github/workflows/cloud139_checkin.yml)]</sup>            | ✅    | `CLOUD139_COOKIE ` 多账号 `&` 隔开                    |
 | [夸克网盘](https://pan.quark.cn/)<sup>[[task](./task/quarkdriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/quarkdriver_checkin.yml)]</sup>     | ✅    | `QUARK_COOKIE ` 多账号 `&` 隔开                       |
 | [京东](https://www.jd.com/)<sup>[[task](./task/jd_checkin.js)]</sup><sup>[[workflow](./.github/workflows/jd_checkin.yml)]</sup>                             | ✅    | `JD_COOKIE` 多账号 `&` 隔开                           |
+| [百度贴吧](https://tieba.baidu.com)<sup>[[task](./task/baiduTieba_checkin.js)]</sup><sup>[[workflow](./.github/workflows/baiduTieba_checkin.yml)]</sup>     | ✅    | `BAIDUTIEBA_COOKIE` 多账号 `&` 隔开                   |
 | [GLADOS](https://glados.rocks/console)<sup>[[task](./task/glados_checkin.js)]</sup><sup>[[workflow](./.github/workflows/glados_checkin.yml)]</sup>          | ✅    | [glados_accounts.js](./config/glados_accounts.js)     |
 | [HIFIN](https://www.hifini.com/)<sup>[[task](./task/hifin_checkin.js)]</sup><sup>[[workflow](./.github/workflows/hifin_checkin.yml)]</sup>                  | ✅    | `HIFIN_COOKIE` 多账号 `&` 隔开                        |
 | [IKUUU](https://ikuuu.org/)<sup>[[task](./task/ikuuu_checkin.js)]</sup><sup>[[workflow](./.github/workflows/ikuuu_checkin.yml)]</sup>                       | ✅    | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
@@ -40,3 +41,4 @@
 - @nibabashilkk: [nibabashilkk/alipan_auto_sign](https://github.com/nibabashilkk/alipan_auto_sign)
 - @imoki: [imoki/sign_script](https://github.com/imoki/sign_script)
 - @Litre-WU: [Litre-WU/Sign](https://github.com/Litre-WU/Sign)
+- @sudojia: [sudojia/scripts](https://github.com/sudojia/scripts)
