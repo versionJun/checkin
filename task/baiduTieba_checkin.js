@@ -8,7 +8,7 @@ const { logger, getLog4jsStr } = require('../utils/log4js.js')
 const API = {
     'TBS_API': 'http://tieba.baidu.com/dc/common/tbs',
     'FOLLOW_API': 'https://tieba.baidu.com/mo/q/newmoindex',
-    'SIGN_API': 'http://c.tieba.baidu.com/c/c/forum/sign'
+    'SIGN_API': 'http://c.tieba.baidu.com/c/c/forum/sign',
 }
 
 const DEFAULTS_HEADERS = {
@@ -23,18 +23,18 @@ axios.defaults.timeout = 5 * 1000
 
 function getTiebaCookie() {
 
-    const TIEBA_COOKIE = process.env.TIEBA_COOKIE|| ''
+    const BAIDUTIEBA_COOKIE = process.env.BAIDUTIEBA_COOKIE|| ''
 
-    const TIEBA_COOKIE_ARR = TIEBA_COOKIE.indexOf('&') > -1
-        ? TIEBA_COOKIE.split(/\s*&\s*/).filter(item => item !== '')
-        : TIEBA_COOKIE ? [TIEBA_COOKIE] : [];
+    const BAIDUTIEBA_COOKIE_ARR = BAIDUTIEBA_COOKIE.indexOf('&') > -1
+        ? BAIDUTIEBA_COOKIE.split(/\s*&\s*/).filter(item => item !== '')
+        : BAIDUTIEBA_COOKIE ? [BAIDUTIEBA_COOKIE] : [];
 
-    if (!TIEBA_COOKIE_ARR.length) {
-        console.error("未获取到 TIEBA_COOKIE , 程序终止")
+    if (!BAIDUTIEBA_COOKIE_ARR.length) {
+        console.error("未获取到 BAIDUTIEBA_COOKIE , 程序终止")
         process.exit(0)
     }
 
-    return TIEBA_COOKIE_ARR
+    return BAIDUTIEBA_COOKIE_ARR
 }
 
 function getTBS(cookie){
@@ -47,9 +47,11 @@ function getTBS(cookie){
     })
     .then(res => {
         // logger.debug(`${JSON.stringify(res.data)}`)
+
         if (res.data.is_login !== 1)
             return Promise.reject(`获取TBS失败 (by:${JSON.stringify(res.data)})`)
-        return res.data
+
+        return res.data.tbs
     })
     .catch(error => {
         console.error(error)
@@ -67,9 +69,16 @@ function getTieBaFollow(cookie){
     })
     .then(res => {
         // logger.debug(`${JSON.stringify(res.data)}`)
+
         if (res.data.no !== 0)
             return Promise.reject(`获取关注贴吧列表失败 (by:${JSON.stringify(res.data)})`)
-        return res.data.data.like_forum.map(forum => forum.forum_name)
+
+        const foollowList = res.data.data.like_forum
+
+        if (!foollowList.length)
+            return Promise.reject(`获取关注贴吧列表为空 (by:${JSON.stringify(res.data)})`)
+
+        return foollowList
     })
     .catch(error => {
         console.error(error)
@@ -82,7 +91,7 @@ const cryptoMD5 = (data) => {
     return crypto.createHash("md5").update(data, 'utf-8').digest("hex");
 }
 
-function signTieBa(forum_name, tbs, cookie){
+function signTieBa(cookie, forum_name, tbs){
     const sign = `kw=${forum_name}tbs=${tbs}tiebaclient!!!`
     const cryptoSign = cryptoMD5(sign)
     return axios(API.SIGN_API, {
@@ -95,15 +104,17 @@ function signTieBa(forum_name, tbs, cookie){
             kw: forum_name,
             tbs: tbs,
             sign: cryptoSign
-        },
+        }
     })
     .then(res => {
-        // logger.debug(`${JSON.stringify(res.data)}`)
+        logger.debug(`${JSON.stringify(res.data)}`)
+
         if (res.data.error_code === 0) {
-            logger.info(`[${forum_name}]签到成功, 连续签到：${res.data.user_info.cont_sign_num}天, 累计签到：${res.data.user_info.total_sign_num}天`)
+            logger.info(`签到成功, 连续签到:${res.data.user_info.cont_sign_num}天 (${res.data.forum[0].window_conf.text})`)
         } else {
-            logger.info(`[${forum_name}]签到失败 (by:${JSON.stringify(res.data)})`)
+            logger.info(`${res.data.error_msg}`)
         }
+
     })
     .catch(error => {
         console.error(error)
@@ -111,8 +122,22 @@ function signTieBa(forum_name, tbs, cookie){
     })
 }
 
+async function signTieBaTask(cookie, followList, tbs){
+    for (let [i, item] of followList.entries()) {
+        try {
+            logger.addContext("贴吧", `${i}[${item.forum_name}]`)
+            await signTieBa(cookie, item.forum_name, tbs);
+            await randomSleep(600, 1200)
+        } catch (e) {
+            logger.info(`签到失败 error:${e}`)
+            continue
+        } finally {
+            logger.removeContext("贴吧")
+        }
+    }
+}
 
-const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration))
+const sleep = (duration) => new Promise((resolve) => { logger.trace(`sleep:${duration}ms`);setTimeout(resolve, duration) })
 const randomSleep = (min, max) => sleep(Math.floor(Math.random() * (max - min + 1)) + min)
 
 !(async () => {
@@ -124,12 +149,10 @@ const randomSleep = (min, max) => sleep(Math.floor(Math.random() * (max - min + 
         try {
             logger.addContext("user", `账号${index}`)
             const tbs = await getTBS(cookie)
+            await randomSleep(500, 1000)
             const followList = await getTieBaFollow(cookie)
-            await randomSleep(600, 1200)
-            for (const forum_name of followList) {
-                await signTieBa(forum_name, tbs, cookie);
-                await randomSleep(1400, 2800)
-            }
+            await randomSleep(500, 1000)
+            await signTieBaTask(cookie, followList, tbs)
         } catch (error) {
             console.error(error)
             logger.error(error)
