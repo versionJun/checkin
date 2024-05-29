@@ -3,7 +3,7 @@ name: "baiduTieba_checkin"
 on:
   schedule:
     # UTC 16点30分(北京时间 0点30分) 30 16 * * *
-    - cron: "40 16 * * *"
+    - cron: "10 17 * * *"
   workflow_dispatch:
 
 env:
@@ -37,7 +37,7 @@ jobs:
           # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           # cookie, 多个账号 & 隔开
-          TIEBA_COOKIE: ${{ secrets.TIEBA_COOKIE }}
+          BAIDUTIEBA_COOKIE: ${{ secrets.BAIDUTIEBA_COOKIE }}
         run: |
           node ./task/baiduTieba_checkin.js
 
