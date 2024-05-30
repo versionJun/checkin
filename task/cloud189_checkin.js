@@ -98,7 +98,7 @@ function goLoginUrl() {
     return axios(LOGINURL_URL, {
         method: 'GET',
         timeout: 50,
-        retry: 3
+        retry: 4
     })
     .then(res => {
         const urlStr = res.request.res.responseUrl
@@ -106,7 +106,7 @@ function goLoginUrl() {
         return query
     })
     .catch(error => {
-        console.error(error)
+        console.log(error)
         return Promise.reject(`goLoginUrl->${error}`)
     })
 }
