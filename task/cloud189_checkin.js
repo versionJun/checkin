@@ -97,8 +97,8 @@ function goEncryptConf(){
 function goLoginUrl() {
     return axios(LOGINURL_URL, {
         method: 'GET',
-        timeout: 50,
-        retry: 2
+        // timeout: 50,
+        // retry: 2
     })
     .then(res => {
         const urlStr = res.request.res.responseUrl
@@ -106,7 +106,7 @@ function goLoginUrl() {
         return query
     })
     .catch(error => {
-        console.log(error)
+        console.error(error)
         return Promise.reject(`goLoginUrl->${error}`)
     })
 }
@@ -440,7 +440,7 @@ function goGetUserSizeInfo(cookieJar){
             await doFamilyTask(cookieJar)
             await goGetUserSizeInfo(cookieJar)
         } catch(error) {
-            console.log(error)
+            console.error(error)
             logger.error(error)
         } finally {
             logger.removeContext("user")
@@ -448,9 +448,15 @@ function goGetUserSizeInfo(cookieJar){
     }
     
     // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
-
-    await sent_message_by_pushplus({ 
-        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: getLog4jsStr('INFO') 
-    });
+    if (getLog4jsStr('ERROR') != '')
+        await sent_message_by_pushplus({ 
+            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
+            message: getLog4jsStr('ALL') 
+        });
+    else
+        await sent_message_by_pushplus({ 
+            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
+            message: getLog4jsStr('INFO') 
+        });
+        
 })()
