@@ -96,7 +96,9 @@ function goEncryptConf(){
 
 function goLoginUrl() {
     return axios(LOGINURL_URL, {
-        method: 'GET'
+        method: 'GET',
+        timeout: 50,
+        retry: 3
     })
     .then(res => {
         const urlStr = res.request.res.responseUrl
