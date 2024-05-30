@@ -440,7 +440,7 @@ function goGetUserSizeInfo(cookieJar){
             await doFamilyTask(cookieJar)
             await goGetUserSizeInfo(cookieJar)
         } catch(error) {
-            console.error(error)
+            console.log(error)
             logger.error(error)
         } finally {
             logger.removeContext("user")
