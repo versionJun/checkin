@@ -104,6 +104,9 @@ function signTieBa(cookie, forum_name, tbs){
             kw: forum_name,
             tbs: tbs,
             sign: cryptoSign
+        },
+        retryCondition: function(data){
+            return data.error_code === '2280007' && data.error_msg === '签到服务忙，请重新签到'
         }
     })
     .then(res => {
