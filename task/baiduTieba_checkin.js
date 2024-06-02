@@ -115,7 +115,7 @@ function signTieBa(cookie, forum_name, tbs){
         if (res.data.error_code === '0') {
             logger.info(`签到成功, 连续签到:${res.data.user_info.cont_sign_num}天 (${res.data.forum[0].window_conf.text})`)
         } else {
-            logger.info(`${res.data.error_msg}`)
+            logger.error(`${res.data.error_msg}`)
         }
 
     })
@@ -166,9 +166,10 @@ const randomSleep = (min, max) => sleep(Math.floor(Math.random() * (max - min + 
 
     // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
 
-    await sent_message_by_pushplus({ 
-        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: getLog4jsStr('INFO') 
-    });
+    if (getLog4jsStr('ERROR') != '')
+        await sent_message_by_pushplus({ 
+            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
+            message: getLog4jsStr('INFO') 
+        });
 })()
 
