@@ -92,7 +92,15 @@ function handleRetry(r){
     if (r.cause) info.push(`error.cause=${JSON.stringify(r.cause)}`)
     logger.warn(info.join(' '))
 
-    return new Promise((resolve) => setTimeout(() => resolve(service(axiosConfig)), axiosConfig.retryDelay))
+    const backoff = new Promise(function (resolve) {
+        setTimeout(function () {
+            resolve()
+        }, axiosConfig.retryDelay)
+    })
+
+    return backoff.then(function () {
+        return service(axiosConfig)
+    })
 }
 
 module.exports = service
