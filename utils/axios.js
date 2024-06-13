@@ -1,11 +1,11 @@
 const axios = require('axios')
-const { logger } = require('./log4js')
+const { logger, log4js } = require('./log4js')
 
 
 const service = axios.create({
     timeout: 10 * 1000,         // 请求超时时间（超时后还未接收到数据，就需要再次发送请求）
-    retry: 3,                   // 重试请求次数（最多重试几次请求）
-    retryDelay: 1 * 1000,       // 重试请求间隔
+    retry: 3,                   // 全局重试请求次数（最多重试几次请求）
+    retryDelay: 1 * 1000,       // 全局重试请求间隔
     isUrlExcludeParams: true,   
 });
 
@@ -39,7 +39,10 @@ service.interceptors.response.use(async (response) => {
         printRequestDurationInfo(error.config)
 
         // 如果有响应内容，就直接返回错误信息，不再发送请求
-        if (error.response && error.response.data) return Promise.reject(error)
+        if (error.response && error.response.data) {
+            logger.warn(`响应拦截器 error 有响应内容,直接返回错误信息不再发送请求`)
+            return Promise.reject(error)
+        }
 
         await handleRetry(error) 
 
@@ -65,13 +68,19 @@ function handleRetry(r){
     const axiosConfig = r.config
 
     // If config does not exist or the retry option is not set, reject
-    if (!axiosConfig || !axiosConfig.retry) return 
+    if (!axiosConfig || !axiosConfig.retry) {
+        logger.warn(`handleRetry config does not exist or the retry option is not set, reject`)
+        return
+    }
 
     // __retryCount用来记录当前是第几次发送请求
     axiosConfig.__retryCount = axiosConfig.__retryCount || 0
 
     // 如果当前发送的请求大于等于设置好的请求次数时，不再发送请求
-    if (axiosConfig.__retryCount >= axiosConfig.retry) return 
+    if (axiosConfig.__retryCount >= axiosConfig.retry) {
+        logger.warn(`handleRetry 当前重试请求次数(${axiosConfig.__retryCount})大于等于设置好的重试请求次数(${axiosConfig.retry}), reject`)
+        return
+    }
 
     // 记录请求次数+1
     axiosConfig.__retryCount += 1
@@ -88,6 +97,7 @@ function handleRetry(r){
     // if (axiosConfig.params) info.push(`params=${axiosConfig.params}`)
     // if (axiosConfig.data) info.push(`data=${axiosConfig.data}`)
     if (r.data) info.push(`response.data=${JSON.stringify(r.data)}`)
+    if (r.code) info.push(`error.code=${r.code}`)
     if (r.message) info.push(`error.message=${r.message}`)
     if (r.cause) info.push(`error.cause=${JSON.stringify(r.cause)}`)
     logger.warn(info.join(' '))
