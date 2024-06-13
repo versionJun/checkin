@@ -1,5 +1,5 @@
 const axios = require('axios')
-const { logger, log4js } = require('./log4js')
+const { logger } = require('./log4js')
 
 
 const service = axios.create({
