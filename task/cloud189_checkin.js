@@ -245,7 +245,7 @@ async function goDrawPrizeMarketDetails(cookieJar){
         })
         .catch(error => {
             console.error(error)
-            logger.error(`goDrawPrizeMarketDetails->${error}`)
+            logger.error(`第${index+1}次抽奖失败,(by_error:${error})`)
         })
 
         await sleep(5000); // 延迟5秒
