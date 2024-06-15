@@ -91,7 +91,7 @@ function getSsoTokenApi(session, toSourceId = "001005"){
         return res.data.data.token
     })
     .catch(error => {
-        return Promise.reject(`${arguments.callee.name}->${error}`)
+        return Promise.reject(`getSsoTokenApi->${error}`)
     })
 }
 
@@ -119,7 +119,7 @@ function getJwtTokenApi(session, ssoToken){
     })
     .catch(error => {
         console.error(error)
-        return Promise.reject(`${arguments.callee.name}->${error}`)
+        return Promise.reject(`getJwtTokenApi->${error}`)
     })
 }
 
@@ -144,7 +144,7 @@ function signInApi(session){
         return res.data.result
     })
     .catch(error => {
-        return Promise.reject(`${arguments.callee.name}->${error}`)
+        return Promise.reject(`signInApi->${error}`)
     })
 }
 
@@ -160,7 +160,7 @@ async function signInTask(session){
         const signInApiRes = await signInApi(session)
         logger.info(`云盘每日签到:${signInApiRes.todaySignIn ? '成功':'失败'} (当前云朵:${signInApiRes.total}${signInApiRes.toReceive ? `,待领取${signInApiRes.toReceive}` : ""})`)
     } catch (error) {
-        logger.error(`${arguments.callee.name}->${error}`)
+        logger.error(`signInTask->${error}`)
     }
 }
 
@@ -185,7 +185,7 @@ function signInMultiApi(session){
 
     })
     .catch(error => {
-        return Promise.reject(`${arguments.callee.name}->${error}`)
+        return Promise.reject(`signInMultiApi->${error}`)
     })
 }
 
@@ -197,7 +197,7 @@ async function signInMultiTask(session){
         }
         await signInMultiApi(session)
     } catch (error) {
-        logger.error(`${arguments.callee.name}->${error}`)
+        logger.error(`signInMultiTask->${error}`)
     }
 }
 
@@ -222,7 +222,7 @@ function signInWxApi(session){
         logger.info(`公众号每日签到:成功 (当前云朵:${result.total})`)
     })
     .catch(error => {
-        logger.error(`${arguments.callee.name}->${error}`)
+        logger.error(`signInWxApi->${error}`)
     })
 }
 
@@ -230,7 +230,7 @@ async function signInWxTask(session){
     try {
         await signInWxApi(session)
     } catch (error) {
-        logger.error(`${arguments.callee.name}->${error}`)
+        logger.error(`signInWxTask->${error}`)
     }
 }
 
@@ -250,7 +250,7 @@ function getWxDrawInfoApi(session){
         return res.data
     })
     .catch(error => {
-        return Promise.reject(`${arguments.callee.name}->${error}`)
+        return Promise.reject(`getWxDrawInfoApi->${error}`)
     })
 }
 
@@ -270,7 +270,7 @@ function doWxDarwApi(session){
         return res.data
     })
     .catch(error => {
-        return Promise.reject(`${arguments.callee.name}->${error}`)
+        return Promise.reject(`doWxDarwApi->${error}`)
     })
 }
 
@@ -284,7 +284,7 @@ async function wxDrawTask(session){
         const wxDarw = await doWxDarwApi(session)
         logger.info(`公众号抽奖:成功(${dayjs.tz(dayjs(wxDarw.insertTime)).format('YYYY-MM-DD HH:mm:ss')}),获得(${wxDarw.result.prizeName})`)
     } catch (error) {
-        logger.error(`${arguments.callee.name}->${error}`)
+        logger.error(`wxDrawTask->${error}`)
     }
 }
 
