@@ -87,7 +87,7 @@ function getSsoTokenApi(session, toSourceId = "001005"){
     })
     .then(res => {
         // logger.debug(`${JSON.stringify(res.data)}`)
-        if (!res.data.success) return Promise.reject(`获取ssoToken失败(by:${res.data.message})}`)
+        if (!res.data.success) return Promise.reject(`获取ssoToken失败(by:${JSON.stringify(res.data)})`)
         return res.data.data.token
     })
     .catch(error => {
