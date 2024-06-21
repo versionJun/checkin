@@ -88,7 +88,7 @@ function handleRetry(r){
     // 设置请求间隔 指数增长的重试策略 下一次重试的延迟时间会翻倍
     axiosConfig.retryDelay = Math.pow(2, axiosConfig.__retryCount) * 1000;
 
-    if (r.message && !(/^timeout of \d*ms exceeded$/).test(r.message)) console.error(r)
+    // if (r.message && !(/^timeout of \d*ms exceeded$/).test(r.message)) console.error(r)
 
     const info = []
     info.push(`__retryCount=${axiosConfig.__retryCount}`)
