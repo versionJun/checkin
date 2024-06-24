@@ -17,20 +17,32 @@
 | [V2FREE](https://v2free.net/)<sup>[[task](./task/v2free_checkin.js)]</sup><sup>[[workflow](./.github/workflows/v2free_checkin.yml)]</sup>                   | ❌    | [v2free_accounts.js](./config/v2free_accounts.js)     |
 | [TLY](https://tly31.com/)<sup>[[task](./task/tly_checkin.js)]</sup><sup>[[workflow](./.github/workflows/tly_checkin.yml)]</sup>                             | ❌    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
 
-> **获取 REFRESH_TOKENS 的方法**
->
->  登录阿里云盘后，可以在`开发者工具(F12)` -> `Application` -> `Local Storage` 中的 `token` 字段对应的JSON中寻找`refresh_token`。
+> **[Mattraks/delete-workflow-runs](https://github.com/Mattraks/delete-workflow-runs)@v2**
+> 
+> `Repository Settings` -> `Actions` -> `General` -> ` Read and write permissions`
 
-> **获取 GP_TOKEN 的方法**
+> **获取 `GP_TOKEN` 的方法**
 >
 > 点击 GitHub **用户** 头像 -> `Settings` (注意与配置 Secrets 不是同一个
 > Settings) -> `Developer settings` -> `Personal access token` -> `Tokens(classic)` -> `Generate new token`
 >
 > 权限选择 `repo`, 不然不能更新 Secrets. 记住生成的 token, 离开页面后无法查看
 
-> **Mattraks/delete-workflow-runs@v2**
-> 
-> `Repository Settings` -> `Actions` -> `General` -> ` Read and write permissions`
+> **获取 `REFRESH_TOKENS` 的方法**
+>
+>  登录[阿里云盘](https://www.alipan.com/)后，可以在`开发者工具(F12)` -> `Application` -> `Local Storage` 中的 `token` 字段对应的JSON中寻找`refresh_token`。
+
+> **获取 `CLOUD139_COOKIE` 的方法**
+>
+>  登录[移动云盘](https://yun.139.com/) 格式为`authorization=x;`
+
+> **获取 `JD_COOKIE` 的方法**
+>
+>  登录[京东移动版](https://m.jd.com/) 格式为`pt_key=x;pt_pin=x;`
+
+> **获取 `BAIDUTIEBA_COOKIE` 的方法**
+>
+>  登录[百度贴吧](https://tieba.baidu.com/) 格式为`BDUSS=x;`
 
 #### 参考项目
 - @mrabit: [mrabit/aliyundriveDailyCheck](https://github.com/mrabit/aliyundriveDailyCheck/)
