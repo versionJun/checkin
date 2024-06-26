@@ -325,10 +325,16 @@ async function doTask(session){
 
     // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
 
-    await sent_message_by_pushplus({ 
-        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: getLog4jsStr('INFO')
-    });
+    if (getLog4jsStr('ERROR') != '')
+        await sent_message_by_pushplus({ 
+            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
+            message: getLog4jsStr('ALL') 
+        });
+    else
+        await sent_message_by_pushplus({ 
+            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
+            message: getLog4jsStr('INFO') 
+        });
 
 })()
 
