@@ -3,7 +3,7 @@ const { logger } = require('./log4js')
 
 
 const service = axios.create({
-    timeout: 5 * 1000,          // 请求超时时间（超时后还未接收到数据，就需要再次发送请求）
+    timeout: 8 * 1000,          // 请求超时时间（超时后还未接收到数据，就需要再次发送请求）
     retry: 3,                   // 全局重试请求次数（最多重试几次请求）
     retryDelay: 1 * 1000,       // 全局重试请求间隔
     isUrlExcludeParams: true,   
@@ -26,27 +26,23 @@ service.interceptors.request.use(
 )
 
 // 响应拦截器  
-service.interceptors.response.use(async (response) => {
+service.interceptors.response.use((response) => {
     
         printRequestDurationInfo(response.config)
 
-        if(response.config?.retryCondition?.(response.data)) await handleRetry(response)
+        if(response.config?.retryCondition?.(response.data)) return handleRetry(response, false)
 
         return Promise.resolve(response);
 
-    }, async (error) => {
+    }, (error) => {
 
         printRequestDurationInfo(error.config)
 
         // 如果有响应内容，就直接返回错误信息，不再发送请求
-        if (error.response && error.response.data) {
-            logger.warn(`响应拦截器 error 有响应内容,直接返回错误信息不再发送请求`)
-            return Promise.reject(error)
-        }
+        if (error.response && error.response.data) return Promise.reject(error)
 
-        await handleRetry(error) 
+        return handleRetry(error)
 
-        return Promise.reject(error)
     }
 )
 
@@ -63,24 +59,18 @@ function printRequestDurationInfo(config){
     logger.trace(logInfo.join(' '))
 }
 
-function handleRetry(r){
+function handleRetry(r, isError = true){
 
     const axiosConfig = r.config
 
     // If config does not exist or the retry option is not set, reject
-    if (!axiosConfig || !axiosConfig.retry) {
-        logger.warn(`handleRetry config does not exist or the retry option is not set, reject`)
-        return
-    }
+    if (!axiosConfig || !axiosConfig.retry) return isError ? Promise.reject(r) : Promise.resolve(r)
 
     // __retryCount用来记录当前是第几次发送请求
     axiosConfig.__retryCount = axiosConfig.__retryCount || 0
 
     // 如果当前发送的请求大于等于设置好的请求次数时，不再发送请求
-    if (axiosConfig.__retryCount >= axiosConfig.retry) {
-        logger.warn(`handleRetry 当前重试请求次数(${axiosConfig.__retryCount})大于等于设置好的重试请求次数(${axiosConfig.retry}), reject`)
-        return
-    }
+    if (axiosConfig.__retryCount >= axiosConfig.retry) return isError ? Promise.reject(r) : Promise.resolve(r)
 
     // 记录请求次数+1
     axiosConfig.__retryCount += 1
@@ -94,23 +84,14 @@ function handleRetry(r){
     info.push(`__retryCount=${axiosConfig.__retryCount}`)
     info.push(`retryDelay=${(axiosConfig.retryDelay / 1000)}s`)
     info.push(`${axiosConfig.method}=>${axiosConfig.isUrlExcludeParams ? urlExcludeParams(axiosConfig.url) : axiosConfig.url}`)
-    // if (axiosConfig.params) info.push(`params=${axiosConfig.params}`)
-    // if (axiosConfig.data) info.push(`data=${axiosConfig.data}`)
-    if (r.data) info.push(`response.data=${JSON.stringify(r.data)}`)
-    if (r.code) info.push(`error.code=${r.code}`)
-    if (r.message) info.push(`error.message=${r.message}`)
-    if (r.cause) info.push(`error.cause=${JSON.stringify(r.cause)}`)
+    // if (r.params) info.push(`${isError ? 'error':'response'}.data=${JSON.stringify(r.params)}`)
+    if (r.data) info.push(`${isError ? 'error':'response'}.data=${JSON.stringify(r.data)}`)
+    if (r.code) info.push(`${isError ? 'error':'response'}.code=${r.code}`)
+    if (r.message) info.push(`${isError ? 'error':'response'}.message=${r.message}`)
+    if (r.cause) info.push(`${isError ? 'error':'response'}.cause=${JSON.stringify(r.cause)}`)
     logger.warn(info.join(' '))
 
-    const backoff = new Promise(function (resolve) {
-        setTimeout(function () {
-            resolve()
-        }, axiosConfig.retryDelay)
-    })
-
-    return backoff.then(function () {
-        return service(axiosConfig)
-    })
+    return new Promise((resolve) => setTimeout(() => resolve(service(axiosConfig)), axiosConfig.retryDelay))
 }
 
 module.exports = service
