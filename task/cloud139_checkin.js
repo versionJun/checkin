@@ -104,7 +104,7 @@ function getJwtTokenApi(session, ssoToken){
     })
     .then(res => {
         // logger.debug(`${JSON.stringify(res.data)}`)
-        if (res.data.code !== 0) return Promise.reject(`获取jwtToken失败`)
+        if (res.data.code !== 0) return Promise.reject(`获取jwtToken失败(by:${JSON.stringify(res.data)})`)
         const cookies = []
         if (Array.isArray(res.headers['set-cookie']))
             res.headers['set-cookie'].map(item => {
