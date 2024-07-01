@@ -415,7 +415,7 @@ function receiveApi(session){
         },
     })
     .then(res => {
-        logger.debug(`${JSON.stringify(res.data)}`)
+        // logger.debug(`${JSON.stringify(res.data)}`)
         if (res.data.code !== 0) return Promise.reject(`失败(by:${JSON.stringify(res.data)})`)
         return res.data
     })
