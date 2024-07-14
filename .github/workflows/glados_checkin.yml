@@ -41,6 +41,7 @@ jobs:
           GADLOS_COOKIE_0: ${{secrets.GADLOS_COOKIE_0}}
           GADLOS_COOKIE_1: ${{secrets.GADLOS_COOKIE_1}}
           GADLOS_COOKIE_2: ${{secrets.GADLOS_COOKIE_2}}
+          GADLOS_COOKIE_3: ${{secrets.GADLOS_COOKIE_3}}
         run: |
           node ./task/glados_checkin.js
 
