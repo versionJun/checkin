@@ -3,7 +3,7 @@ name: "cloud189_checkin"
 on:
   schedule:
     # UTC 16点30分(北京时间 0点30分) 30 16 * * *
-    - cron: "05 17 * * *"
+    - cron: "35 17 * * *"
   workflow_dispatch:
 
 env:
@@ -35,6 +35,9 @@ jobs:
 
       - name: Run main
         env:
+          # wxpusher
+          WXPUSHER_TOKEN: ${{ secrets.WXPUSHER_TOKEN }}
+          WXPUSHER_UID: ${{ secrets.WXPUSHER_UID }}
           # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           # cloud189
