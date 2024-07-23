@@ -1,7 +1,7 @@
 const axios = require('../utils/axios.js')
 const crypto = require('crypto')
 const path = require('path')
-const { sent_message_by_pushplus } = require('../utils/message.js')
+const message = require('../utils/message.js')
 const { dayjs } = require('../utils/dayjs.js')
 const { logger, getLog4jsStr } = require('../utils/log4js.js')
 
@@ -167,9 +167,9 @@ const randomSleep = (min, max) => sleep(Math.floor(Math.random() * (max - min + 
     // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
 
     if (getLog4jsStr('ERROR') != '')
-        await sent_message_by_pushplus({ 
+        await message.send_message({ 
             title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-            message: getLog4jsStr('INFO') 
+            message: getLog4jsStr('INFO')
         });
 })()
 
