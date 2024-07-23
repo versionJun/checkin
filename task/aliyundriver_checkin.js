@@ -198,7 +198,7 @@ async function getRefreshTokenArray() {
 
     await message.send_message({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: getLog4jsStr('INFO')
+        message: getLog4jsStr(getLog4jsStr('ERROR') != '' ? 'ALL' : 'INFO') 
     });
 
 })()
