@@ -12,7 +12,7 @@ const SCT_SENDKEY = process.env.SCT_SENDKEY
 
 // wxpusher
 const WXPUSHER_TOKEN = process.env.WXPUSHER_TOKEN
-const WXPUSHER_UID	 = process.env.WXPUSHER_UID	
+const WXPUSHER_UID = process.env.WXPUSHER_UID	
 
 /**
  * pushplus 推送
