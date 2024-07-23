@@ -35,6 +35,9 @@ jobs:
 
       - name: Run main
         env:
+          # wxpusher
+          WXPUSHER_TOKEN: ${{ secrets.WXPUSHER_TOKEN }}
+          WXPUSHER_UID: ${{ secrets.WXPUSHER_UID }}
           # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           # ikuuu
