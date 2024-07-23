@@ -1,7 +1,7 @@
 const axios = require('../utils/axios.js')
 const cheerio = require('cheerio')
 const path = require('path')
-const { sent_message_by_pushplus } = require('../utils/message.js')
+const message = require('../utils/message.js')
 const accounts = require('../config/ikuuu_accounts.js')
 const { dayjs } = require('../utils/dayjs.js')
 const { logger, getLog4jsStr } = require('../utils/log4js.js')
@@ -136,9 +136,9 @@ function goUser(cookie) {
         }
     }
 
-    await sent_message_by_pushplus({ 
+    await message.send_message({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-        message: getLog4jsStr('INFO') 
+        message: getLog4jsStr(getLog4jsStr('ERROR') != '' ? 'ALL' : 'INFO') 
     });
 
 })()
