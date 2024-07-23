@@ -34,6 +34,9 @@ jobs:
 
       - name: Run main
         env:
+          # wxpusher
+          WXPUSHER_TOKEN: ${{ secrets.WXPUSHER_TOKEN }}
+          WXPUSHER_UID: ${{ secrets.WXPUSHER_UID }}
           # pushplus
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           # QUARK_COOKIE, 多个账号 & 隔开
