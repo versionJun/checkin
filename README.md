@@ -1,14 +1,16 @@
-| 公共参数       | 说明                                                |
-| -------------- | --------------------------------------------------- |
-| GP_TOKEN       | 在 Action 中运行时更新 Repository secrets           |
-| PUSHPLUS_TOKEN | [pushplus](http://www.pushplus.plus) Token 消息推送 |
+| 公共参数              | 说明                                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| GP_TOKEN              | 在 Action 中运行时更新 Repository secrets                                                                      |
+| <s>PUSHPLUS_TOKEN</s> | <s>[pushplus](http://www.pushplus.plus) Token 消息推送</s> `弃用于2024-08-01开始收费`                                                    |
+| WXPUSHER_TOKEN        | [wxpusher文档](https://wxpusher.zjiecode.com/docs/) 创建应用并获取appToken即可                                 |
+| WXPUSHER_UID          | [wxpusher管理后台](https://wxpusher.zjiecode.com/admin) 扫码关注了应用之后，在公众号，我的 -> 我的UID 即可获取 |
 
 | 任务                                                                                                                                                        | 状态 | 参数                                                  |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ----------------------------------------------------- |
 | [阿里云盘](https://www.alipan.com/)<sup>[[task](./task/aliyundriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/aliyundriver_checkin.yml)]</sup> | ✅    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
 | [天翼云盘](https://cloud.189.cn/)<sup>[[task](./task/cloud189_checkin.js)]</sup><sup>[[workflow](./.github/workflows/cloud189_checkin.yml)]</sup>           | ✅    | [cloud189_accounts.js](./config/cloud189_accounts.js) |
 | [移动云盘](https://yun.139.com/)<sup>[[task](./task/cloud139_checkin.js)]</sup><sup>[[workflow](./.github/workflows/cloud139_checkin.yml)]</sup>            | ✅    | `CLOUD139_COOKIE ` 多账号 `&` 隔开                    |
-| [夸克网盘](https://pan.quark.cn/)<sup>[[task](./task/quarkdriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/quarkdriver_checkin.yml)]</sup>     | ❌    | `QUARK_COOKIE ` 多账号 `&` 隔开                       |
+| [夸克网盘](https://pan.quark.cn/)<sup>[[task](./task/quarkdriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/quarkdriver_checkin.yml)]</sup>     | ✅    | `QUARK_COOKIE ` 多账号 `&` 隔开                       |
 | [京东](https://www.jd.com/)<sup>[[task](./task/jd_checkin.js)]</sup><sup>[[workflow](./.github/workflows/jd_checkin.yml)]</sup>                             | ✅    | `JD_COOKIE` 多账号 `&` 隔开                           |
 | [百度贴吧](https://tieba.baidu.com)<sup>[[task](./task/baiduTieba_checkin.js)]</sup><sup>[[workflow](./.github/workflows/baiduTieba_checkin.yml)]</sup>     | ✅    | `BAIDUTIEBA_COOKIE` 多账号 `&` 隔开                   |
 | [GLADOS](https://glados.rocks/console)<sup>[[task](./task/glados_checkin.js)]</sup><sup>[[workflow](./.github/workflows/glados_checkin.yml)]</sup>          | ✅    | [glados_accounts.js](./config/glados_accounts.js)     |
