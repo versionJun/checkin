@@ -1,6 +1,6 @@
 const axios = require('../utils/axios.js')
 const path = require('path')
-const { sent_message_by_pushplus } = require('../utils/message.js')
+const message = require('../utils/message.js')
 const { dayjs } = require('../utils/dayjs.js')
 const { logger, getLog4jsStr } = require('../utils/log4js')
 
@@ -133,15 +133,10 @@ function goSign(cookie){
 
     // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
 
-    if (getLog4jsStr('ERROR') != '')
-        await sent_message_by_pushplus({ 
-            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-            message: getLog4jsStr('ALL') 
-        });
-    else
-        await sent_message_by_pushplus({ 
-            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-            message: getLog4jsStr('INFO') 
-        });
+    await message.send_message({ 
+        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
+        message: getLog4jsStr(getLog4jsStr('ERROR') != '' ? 'ALL' : 'INFO') 
+    });
+    
 })()
 
