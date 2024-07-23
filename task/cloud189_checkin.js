@@ -6,7 +6,7 @@ const { CookieJar } = require('tough-cookie')
 const { wrapper } = require('axios-cookiejar-support')
 wrapper(axios)
 const accounts = require('../config/cloud189_accounts.js')
-const { sent_message_by_pushplus } = require('../utils/message.js')
+const message = require('../utils/message.js')
 const { dayjs } = require('../utils/dayjs.js')
 const { logger, getLog4jsStr } = require('../utils/log4js')
 const crypto = require("crypto")
@@ -447,15 +447,10 @@ function goGetUserSizeInfo(cookieJar){
     }
     
     // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
-    if (getLog4jsStr('ERROR') != '')
-        await sent_message_by_pushplus({ 
-            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-            message: getLog4jsStr('ALL') 
-        });
-    else
-        await sent_message_by_pushplus({ 
-            title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
-            message: getLog4jsStr('INFO') 
-        });
+
+    await message.send_message({ 
+        title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
+        message: getLog4jsStr(getLog4jsStr('ERROR') != '' ? 'ALL' : 'INFO') 
+    });
         
 })()
