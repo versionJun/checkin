@@ -1,7 +1,7 @@
 | 公共参数              | 说明                                                                                                           |
 | --------------------- | -------------------------------------------------------------------------------------------------------------- |
 | GP_TOKEN              | 在 Action 中运行时更新 Repository secrets                                                                      |
-| <s>PUSHPLUS_TOKEN</s> | <s>[pushplus](http://www.pushplus.plus) Token 消息推送</s> `弃用于2024-08-01开始收费`                                                    |
+| <s>PUSHPLUS_TOKEN</s> | <s>[pushplus](http://www.pushplus.plus) Token 消息推送</s> `弃用于2024-08-01开始收费`                          |
 | WXPUSHER_TOKEN        | [wxpusher文档](https://wxpusher.zjiecode.com/docs/) 创建应用并获取appToken即可                                 |
 | WXPUSHER_UID          | [wxpusher管理后台](https://wxpusher.zjiecode.com/admin) 扫码关注了应用之后，在公众号，我的 -> 我的UID 即可获取 |
 
@@ -41,6 +41,8 @@
 > **获取 `JD_COOKIE` 的方法**
 >
 >  登录[京东移动版](https://m.jd.com/) 格式为`pt_key=x;pt_pin=x;`
+> 
+>  `有效期一个月左右`
 
 > **获取 `BAIDUTIEBA_COOKIE` 的方法**
 >
