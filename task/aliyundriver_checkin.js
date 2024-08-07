@@ -85,16 +85,19 @@ function goSignInList(access_token) {
         if (rewards.length) {
             for await (reward of rewards) {
                 const signInDay = reward.day
-                try {
-                    const rewardInfo = await goSginInReward(access_token, signInDay)
-                    const msg = []
-                    msg.push(`第${signInDay}天`)
-                    msg.push(`奖励领取成功: ${rewardInfo.name || ''}${rewardInfo.description || '' }`)
-                    if (rewardInfo.notice) msg.push(`(${rewardInfo.notice})`)
-                    logger.info(msg.join(''))
-                } catch (e) {
-                    logger.error(`第${signInDay}天奖励领取失败:`, e)
-                }
+                
+                logger.info(`第${signInDay}天 未领取奖励`)
+                
+                // try {
+                //     const rewardInfo = await goSginInReward(access_token, signInDay)
+                //     const msg = []
+                //     msg.push(`第${signInDay}天`)
+                //     msg.push(`奖励领取成功: ${rewardInfo.name || ''}${rewardInfo.description || '' }`)
+                //     if (rewardInfo.notice) msg.push(`(${rewardInfo.notice})`)
+                //     logger.info(msg.join(''))
+                // } catch (e) {
+                //     logger.error(`第${signInDay}天奖励领取失败:`, e)
+                // }
             }
         }
 
