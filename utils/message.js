@@ -14,6 +14,9 @@ const SCT_SENDKEY = process.env.SCT_SENDKEY
 const WXPUSHER_TOKEN = process.env.WXPUSHER_TOKEN
 const WXPUSHER_UID = process.env.WXPUSHER_UID	
 
+// PushHub
+const PUSHHUB_TOKEN = process.env.PUSHHUB_TOKEN
+
 /**
  * pushplus 推送
  * 文档：http://www.pushplus.plus/doc/guide/api.html
@@ -146,6 +149,42 @@ async function sent_message_by_wxpusher(params) {
     })
 }
 
+/**
+ * PushHub 推送
+ * 文档：https://www.pushhub.cn/doc/
+ * @param params = { 
+ *  title : 消息标题, 
+ *  message : 消息内容
+ * }
+ */
+async function sent_message_by_pushhub(params) {
+
+    if (!PUSHHUB_TOKEN) {
+        console.error("未获取到 PUSHHUB_TOKEN, 取消推送 PushHub")
+        return;
+    }
+
+    return axios(`https://api.pushhub.cn/send`, {
+        method: 'POST',
+        data: {
+            token: PUSHHUB_TOKEN,
+            title: params.title,
+            content: params.message,
+        }
+    }).then(res => {
+
+        console.log(`PushHub 推送 res.data=${JSON.stringify(res.data)}}`)
+
+    }).catch(error => {
+        console.error(error)
+        console.log(`PushHub 推送 失败:${error}`)
+        if (error.response && error.response.data) {
+            console.log(`PushHub 推送 失败->error.response.data=${JSON.stringify(error.response.data)}`)
+        }
+        console.log(`PushHub 推送 失败->params=${JSON.stringify(params)}`)
+    })
+}
+
 async function send_message(params) {
 
     if (IS_SCHEDULE === 'false') {
@@ -154,7 +193,10 @@ async function send_message(params) {
         return;
     }
 
-   await sent_message_by_wxpusher(params)
+    await sent_message_by_wxpusher(params)
+    
+    // await sent_message_by_pushhub(params)
+    
 }
 
 exports.sent_message_by_pushplus = sent_message_by_pushplus
