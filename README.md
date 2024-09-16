@@ -18,6 +18,7 @@
 | [IKUUU](https://ikuuu.org/)<sup>[[task](./task/ikuuu_checkin.js)]</sup><sup>[[workflow](./.github/workflows/ikuuu_checkin.yml)]</sup>                       | ✅    | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
 | [V2FREE](https://v2free.net/)<sup>[[task](./task/v2free_checkin.js)]</sup><sup>[[workflow](./.github/workflows/v2free_checkin.yml)]</sup>                   | ❌    | [v2free_accounts.js](./config/v2free_accounts.js)     |
 | [TLY](https://tly31.com/)<sup>[[task](./task/tly_checkin.js)]</sup><sup>[[workflow](./.github/workflows/tly_checkin.yml)]</sup>                             | ❌    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
+| [VIVO](https://bbs.vivo.com.cn/newbbs/)<sup>[[task](./task/vivo_checkin.js)]</sup><sup>[[workflow](./.github/workflows/vivo_checkin.yml)]</sup>             | ✅    | `VIVO_COOKIE ` 多账号 `&` 隔开                        |
 
 > **[Mattraks/delete-workflow-runs](https://github.com/Mattraks/delete-workflow-runs)@v2**
 > 
