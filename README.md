@@ -14,7 +14,7 @@
 | [京东](https://www.jd.com/)<sup>[[task](./task/jd_checkin.js)]</sup><sup>[[workflow](./.github/workflows/jd_checkin.yml)]</sup>                             | ❌    | `JD_COOKIE` 多账号 `&` 隔开                           |
 | [百度贴吧](https://tieba.baidu.com)<sup>[[task](./task/baiduTieba_checkin.js)]</sup><sup>[[workflow](./.github/workflows/baiduTieba_checkin.yml)]</sup>     | ✅    | `BAIDUTIEBA_COOKIE` 多账号 `&` 隔开                   |
 | [GLADOS](https://glados.rocks/console)<sup>[[task](./task/glados_checkin.js)]</sup><sup>[[workflow](./.github/workflows/glados_checkin.yml)]</sup>          | ✅    | [glados_accounts.js](./config/glados_accounts.js)     |
-| [HIFIN](https://www.hifini.com/)<sup>[[task](./task/hifin_checkin.js)]</sup><sup>[[workflow](./.github/workflows/hifin_checkin.yml)]</sup>                  | ❌    | `HIFIN_COOKIE` 多账号 `&` 隔开                        |
+| [HIFIN](https://www.hifini.com/)<sup>[[task](./task/hifin_checkin.js)]</sup><sup>[[workflow](./.github/workflows/hifin_checkin.yml)]</sup>                  | ✅    | `HIFIN_COOKIE` 多账号 `&` 隔开                        |
 | [IKUUU](https://ikuuu.org/)<sup>[[task](./task/ikuuu_checkin.js)]</sup><sup>[[workflow](./.github/workflows/ikuuu_checkin.yml)]</sup>                       | ✅    | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
 | [V2FREE](https://v2free.net/)<sup>[[task](./task/v2free_checkin.js)]</sup><sup>[[workflow](./.github/workflows/v2free_checkin.yml)]</sup>                   | ❌    | [v2free_accounts.js](./config/v2free_accounts.js)     |
 | [TLY](https://tly31.com/)<sup>[[task](./task/tly_checkin.js)]</sup><sup>[[workflow](./.github/workflows/tly_checkin.yml)]</sup>                             | ❌    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
