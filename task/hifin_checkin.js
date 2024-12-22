@@ -1,15 +1,15 @@
 const axios = require('../utils/axios.js')
 const cheerio = require('cheerio')
 const path = require('path')
+const { logger, getLog4jsStr } = require('../utils/log4js.js')
 const message = require('../utils/message.js')
 const { dayjs } = require('../utils/dayjs.js')
-const { logger, getLog4jsStr } = require('../utils/log4js.js')
+
 
 const BASE_URL = 'https://www.hifini.com/'
 const SG_SIGN_URL = `${BASE_URL}sg_sign.htm`
 const MY_URL = `${BASE_URL}my.htm`
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
-
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 
 async function getHifinCookie() {
 
@@ -23,16 +23,14 @@ async function getHifinCookie() {
         console.error("未获取到 HIFIN_COOKIE , 程序终止")
         process.exit(0)
     }
-    
+
     return HIFIN_COOKIE_ARR
 }
 
-function goBase(cookie){
-    return axios(`${BASE_URL}`, {
+function getSign(cookie) {
+    return axios(`${SG_SIGN_URL}`, {
         method: 'GET',
         headers: {
-            'Origin': `${BASE_URL}`,
-            'referer': `${BASE_URL}`,
             'Cookie': cookie,
             'User-Agent': UA,
             'Content-Type': 'text/html; charset=utf-8'
@@ -52,10 +50,11 @@ function goBase(cookie){
 
         if (sign == null) return Promise.reject(`sign 获取失败`)
 
-        return { 
+        return {
             username: username,
-            sign: sign[0] 
+            sign: sign[0]
         }
+
     })
     .catch(error => {
         console.error(error)
@@ -63,12 +62,10 @@ function goBase(cookie){
     })
 }
 
-function goSgSign(cookie, sign){
+function goSgSign(cookie, sign) {
     return axios(`${SG_SIGN_URL}`, {
         method: 'POST',
         headers: {
-            'Origin': `${BASE_URL}`,
-            'referer': `${BASE_URL}`,
             'Cookie': cookie,
             'User-Agent': UA,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -80,9 +77,9 @@ function goSgSign(cookie, sign){
     .then(d => {
 
         const $ = cheerio.load(d.data)
-        
+
         const msg_element = $('#body')
-        
+
         const msg = msg_element ? msg_element.text().trim() : null
 
         if ((/^\S*请登录后再签到!\S*$/).test(msg))
@@ -96,7 +93,7 @@ function goSgSign(cookie, sign){
     })
 }
 
-function goMy(cookie){
+function goMy(cookie) {
     return axios(`${MY_URL}`, {
         method: 'GET',
         headers: {
@@ -105,17 +102,17 @@ function goMy(cookie){
             'Content-Type': 'text/html; charset=utf-8'
         }
     })
-    .then(d => {
+        .then(d => {
 
-        const $ = cheerio.load(d.data)
-        const species = $('span.text-muted:contains("金币") > em').text().trim()
+            const $ = cheerio.load(d.data)
+            const species = $('span.text-muted:contains("金币") > em').text().trim()
 
-        return { species }
-    })
-    .catch(error => {
-        console.error(error)
-        return Promise.reject(`goMy->${error}`)
-    })
+            return { species }
+        })
+        .catch(error => {
+            console.error(error)
+            return Promise.reject(`goMy->${error}`)
+        })
 }
 
 !(async () => {
@@ -124,14 +121,15 @@ function goMy(cookie){
 
     for (let index = 0; index < HIFIN_COOKIE_ARR.length; index++) {
         const cookie = HIFIN_COOKIE_ARR[index]
-        if(!cookie) continue
+        if (!cookie) continue
         try {
             logger.addContext("user", `账号${index}`)
-            const { username, sign } = await goBase(cookie)
+            const { username, sign } = await getSign(cookie)
             logger.addContext("user", `账号${index}(${username})`)
             const { msg } = await goSgSign(cookie, sign)
+            logger.info(`${msg}`)
             const { species } = await goMy(cookie)
-            logger.info(`${msg}(剩余金币:${species})`)
+            logger.info(`剩余金币:${species}`)
         } catch (error) {
             console.error(error)
             logger.error(error)
