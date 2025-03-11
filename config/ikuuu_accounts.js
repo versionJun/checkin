@@ -13,4 +13,7 @@ module.exports = [{
 }, {
     email: process.env.IKUUU_EMAIL_4,
     passwd: process.env.IKUUU_PASSWD_4,
+}, {
+    email: process.env.IKUUU_EMAIL_5,
+    passwd: process.env.IKUUU_PASSWD_5,
 }]
