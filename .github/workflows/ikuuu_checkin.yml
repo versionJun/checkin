@@ -51,6 +51,8 @@ jobs:
           IKUUU_PASSWD_3: ${{secrets.IKUUU_PASSWD_3}}
           IKUUU_EMAIL_4: ${{secrets.IKUUU_EMAIL_4}}
           IKUUU_PASSWD_4: ${{secrets.IKUUU_PASSWD_4}}
+          IKUUU_EMAIL_5: ${{secrets.IKUUU_EMAIL_5}}
+          IKUUU_PASSWD_5: ${{secrets.IKUUU_PASSWD_5}}
         run: |
           node ./task/ikuuu_checkin.js
 
