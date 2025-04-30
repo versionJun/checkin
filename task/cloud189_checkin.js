@@ -436,7 +436,7 @@ function goGetUserSizeInfo(cookieJar){
             await goToUrl(toUrl, cookieJar)
             await goUserSign(cookieJar)
             await goDrawPrizeMarketDetails(cookieJar)
-            await doFamilyTask(cookieJar)
+            // await doFamilyTask(cookieJar)
             await goGetUserSizeInfo(cookieJar)
         } catch(error) {
             console.error(error)
