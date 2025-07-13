@@ -30,7 +30,7 @@ async function run(email, password) {
         // headless: true,    //这里我设置成false主要是为了让大家看到效果，设置为true就不会打开浏览器
         // headless: "shell
         headless: false,
-        args: ["--no-sandbox"]，
+        args: ["--no-sandbox"],
         defaultViewport: null,
         timeout: 1000 * 100
     })
