@@ -33,6 +33,10 @@ jobs:
         run: |
           npm install
 
+      - name: Install dependencies puppeteer
+        run: |
+          npm install puppeteer
+          
       - name: Run main
         env:
           # wxpusher
