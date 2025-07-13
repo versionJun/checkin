@@ -99,6 +99,7 @@ async function getAnEnvironmentPublicKey(owner, repo, environment_name) {
  * @param data = { 
  *  owner : GitHub用户名(默认:获取当前值), 
  *  repo : 仓库的名称(默认:获取当前值), 
+ *  environment_name : 环境名称,
  *  secret_name : 要更改的secret的名称, 
  *  secret_value : 要更改的secret的原始值
  * }
