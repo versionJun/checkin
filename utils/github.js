@@ -77,5 +77,62 @@ async function getARepositoryPublicKey(owner, repo) {
     return (await octokit.request('PUT /repos/{owner}/{repo}/actions/secrets/{secret_name}', newData)).status
 }
 
+/**
+ * 获取 环境 公钥
+ * 文档：https://docs.github.com/en/rest/actions/secrets?apiVersion=2022-11-28#get-an-environment-public-key
+ * @param owner GitHub用户名
+ * @param repo 仓库的名称
+ * @returns 格式 { "key_id": "", "key": "" }
+ */
+async function getAnEnvironmentPublicKey(owner, repo, environment_name) {
+    return (await octokit.request('GET /repos/{owner}/{repo}/environments/{environment_name}/secrets/public-key', {
+        owner: owner,
+        repo: repo,
+        environment_name: environment_name,
+        headers: DEFAULT_HEADERS
+    })).data
+}
+
+/**
+ * 创建或更新 environment secret
+ * 文档：https://docs.github.com/zh/rest/actions/secrets?apiVersion=2022-11-28#create-or-update-an-environment-secret
+ * @param data = { 
+ *  owner : GitHub用户名(默认:获取当前值), 
+ *  repo : 仓库的名称(默认:获取当前值), 
+ *  secret_name : 要更改的secret的名称, 
+ *  secret_value : 要更改的secret的原始值
+ * }
+ * @returns 响应状态代码 201=creating;204=updating;
+ */
+ async function createOrUpdateAnEnvironmentSecret(data) {
+
+    const { owner = OWNER, repo = REPO, environment_name, secret_name, secret_value } = data
+
+    // Convert Secret & Base64 key to Uint8Array.
+    const { key, key_id } = await getAnEnvironmentPublicKey(owner, repo, environment_name) // 获取公钥
+
+    const binkey = sodium.from_base64(key, sodium.base64_variants.ORIGINAL)
+    const binsec = sodium.from_string(secret_value)
+
+    // Encrypt the secret using LibSodium
+    const encBytes = sodium.crypto_box_seal(binsec, binkey)
+
+    // Convert encrypted Uint8Array to Base64
+    const encrypted_value = sodium.to_base64(encBytes, sodium.base64_variants.ORIGINAL) // 根据公钥计算加密后的值
+
+    const newData = {
+        owner,
+        repo,
+        environment_name,
+        secret_name,
+        encrypted_value,
+        key_id,
+        headers: DEFAULT_HEADERS
+    }
+
+    return (await octokit.request('PUT /repos/{owner}/{repo}/environments/{environment_name}/secrets/{secret_name}', newData)).status
+}
+
 exports.createOrUpdateARepositorySecret = createOrUpdateARepositorySecret
+exports.createOrUpdateAnEnvironmentSecret = createOrUpdateAnEnvironmentSecret
 
