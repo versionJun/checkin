@@ -25,6 +25,8 @@ async function sleep(duration) {
 }
 async function run(email, password) {
 
+    if (!email || !password) return Promise.reject(`登录失败:请填写账号和密码(by:puppeteer)`)
+
     const browser = await puppeteer.launch({
         // headless: false,    //这里我设置成false主要是为了让大家看到效果，设置为true就不会打开浏览器
         // headless: true,    //这里我设置成false主要是为了让大家看到效果，设置为true就不会打开浏览器
@@ -73,7 +75,7 @@ async function run(email, password) {
         const cookies = await page.cookies();
         const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
 
-        console.log(cookieString);
+        // console.log(cookieString);
 
         return cookieString
     } catch (error) {
@@ -164,7 +166,7 @@ async function updateCookie(userCookie, index) {
 
     for (let index = 0; index < accounts.length; index++) {
         const user = accounts[index]
-        if (!user.email || !user.password)
+        if (!user.cookie)
             continue
         try {
             logger.addContext("user", `账号${index}`)
@@ -173,7 +175,9 @@ async function updateCookie(userCookie, index) {
             if (res1.ssuccess) {
                 logger.info(`${res1.msg}`)
             } else {
+                logger.info(`cookie已过期或无效,开始重新登录...`)
                 userCookie = await run(user.email, user.password)
+                logger.info(`登录成功,cookie抓取成功...`)
                 await updateCookie(userCookie, index)
                 const res2 = await goSgSign(userCookie)
                 logger.info(`${res2.msg}`)
