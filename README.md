@@ -5,20 +5,21 @@
 | WXPUSHER_TOKEN        | [wxpusher文档](https://wxpusher.zjiecode.com/docs/) 创建应用并获取appToken即可                                 |
 | WXPUSHER_UID          | [wxpusher管理后台](https://wxpusher.zjiecode.com/admin) 扫码关注了应用之后，在公众号，我的 -> 我的UID 即可获取 |
 
-| 任务                                                                                                                                                        | 状态 | 参数                                                  |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ----------------------------------------------------- |
-| [阿里云盘](https://www.alipan.com/)<sup>[[task](./task/aliyundriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/aliyundriver_checkin.yml)]</sup> | ✅    | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
-| [天翼云盘](https://cloud.189.cn/)<sup>[[task](./task/cloud189_checkin.js)]</sup><sup>[[workflow](./.github/workflows/cloud189_checkin.yml)]</sup>           | ✅    | [cloud189_accounts.js](./config/cloud189_accounts.js) |
-| [移动云盘](https://yun.139.com/)<sup>[[task](./task/cloud139_checkin.js)]</sup><sup>[[workflow](./.github/workflows/cloud139_checkin.yml)]</sup>            | ✅    | `CLOUD139_COOKIE ` 多账号 `&` 隔开                    |
-| [夸克网盘](https://pan.quark.cn/)<sup>[[task](./task/quarkdriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/quarkdriver_checkin.yml)]</sup>     | ❌    | `QUARK_COOKIE ` 多账号 `&` 隔开                       |
-| [京东](https://www.jd.com/)<sup>[[task](./task/jd_checkin.js)]</sup><sup>[[workflow](./.github/workflows/jd_checkin.yml)]</sup>                             | ❌    | `JD_COOKIE` 多账号 `&` 隔开                           |
-| [百度贴吧](https://tieba.baidu.com)<sup>[[task](./task/baiduTieba_checkin.js)]</sup><sup>[[workflow](./.github/workflows/baiduTieba_checkin.yml)]</sup>     | ✅    | `BAIDUTIEBA_COOKIE` 多账号 `&` 隔开                   |
-| [GLADOS](https://glados.rocks/console)<sup>[[task](./task/glados_checkin.js)]</sup><sup>[[workflow](./.github/workflows/glados_checkin.yml)]</sup>          | ✅    | [glados_accounts.js](./config/glados_accounts.js)     |
-| [HIFIN](https://www.hifini.com/)<sup>[[task](./task/hifin_checkin.js)]</sup><sup>[[workflow](./.github/workflows/hifin_checkin.yml)]</sup>                  | ❌    | `HIFIN_COOKIE` 多账号 `&` 隔开                        |
-| [IKUUU](https://ikuuu.org/)<sup>[[task](./task/ikuuu_checkin.js)]</sup><sup>[[workflow](./.github/workflows/ikuuu_checkin.yml)]</sup>                       | ✅    | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
-| [V2FREE](https://v2free.net/)<sup>[[task](./task/v2free_checkin.js)]</sup><sup>[[workflow](./.github/workflows/v2free_checkin.yml)]</sup>                   | ❌    | [v2free_accounts.js](./config/v2free_accounts.js)     |
-| [TLY](https://tly31.com/)<sup>[[task](./task/tly_checkin.js)]</sup><sup>[[workflow](./.github/workflows/tly_checkin.yml)]</sup>                             | ❌    | `TLY_COOKIE ` 多账号 `&` 隔开                         |
-| [VIVO](https://bbs.vivo.com.cn/newbbs/)<sup>[[task](./task/vivo_checkin.js)]</sup><sup>[[workflow](./.github/workflows/vivo_checkin.yml)]</sup>             | ✅    | `VIVO_COOKIE ` 多账号 `&` 隔开                        |
+| 任务                                                                                                                                                        | 状态     | 参数                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------- |
+| [阿里云盘](https://www.alipan.com/)<sup>[[task](./task/aliyundriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/aliyundriver_checkin.yml)]</sup> | ✅        | `REFRESH_TOKENS` 多账号 `&` 隔开                      |
+| [天翼云盘](https://cloud.189.cn/)<sup>[[task](./task/cloud189_checkin.js)]</sup><sup>[[workflow](./.github/workflows/cloud189_checkin.yml)]</sup>           | ✅        | [cloud189_accounts.js](./config/cloud189_accounts.js) |
+| [移动云盘](https://yun.139.com/)<sup>[[task](./task/cloud139_checkin.js)]</sup><sup>[[workflow](./.github/workflows/cloud139_checkin.yml)]</sup>            | ✅        | `CLOUD139_COOKIE ` 多账号 `&` 隔开                    |
+| [夸克网盘](https://pan.quark.cn/)<sup>[[task](./task/quarkdriver_checkin.js)]</sup><sup>[[workflow](./.github/workflows/quarkdriver_checkin.yml)]</sup>     | ❌        | `QUARK_COOKIE ` 多账号 `&` 隔开                       |
+| [京东](https://www.jd.com/)<sup>[[task](./task/jd_checkin.js)]</sup><sup>[[workflow](./.github/workflows/jd_checkin.yml)]</sup>                             | ❌        | `JD_COOKIE` 多账号 `&` 隔开                           |
+| [百度贴吧](https://tieba.baidu.com)<sup>[[task](./task/baiduTieba_checkin.js)]</sup><sup>[[workflow](./.github/workflows/baiduTieba_checkin.yml)]</sup>     | ✅        | `BAIDUTIEBA_COOKIE` 多账号 `&` 隔开                   |
+| [GLADOS](https://glados.rocks/console)<sup>[[task](./task/glados_checkin.js)]</sup><sup>[[workflow](./.github/workflows/glados_checkin.yml)]</sup>          | ✅        | [glados_accounts.js](./config/glados_accounts.js)     |
+| <s>[HIFIN](https://www.hifini.com/)<sup>[[task](./task/hifin_checkin.js)]</sup><sup>[[workflow](./.github/workflows/hifin_checkin.yml)]</sup></s>           | <s>❌</s> | <s>`HIFIN_COOKIE` 多账号 `&` 隔开</s>                 |
+| [HIFITI](https://www.hifiti.com/)<sup>[[task](./task/hifiti_checkin.js)]</sup><sup>[[workflow](./.github/workflows/hifiti_checkin.yml)]</sup>               | ✅        | [hifiti_accounts.js](./config/hifiti_accounts.js)     |
+| [IKUUU](https://ikuuu.org/)<sup>[[task](./task/ikuuu_checkin.js)]</sup><sup>[[workflow](./.github/workflows/ikuuu_checkin.yml)]</sup>                       | ✅        | [ikuuu_accounts.js](./config/ikuuu_accounts.js)       |
+| [V2FREE](https://v2free.net/)<sup>[[task](./task/v2free_checkin.js)]</sup><sup>[[workflow](./.github/workflows/v2free_checkin.yml)]</sup>                   | ❌        | [v2free_accounts.js](./config/v2free_accounts.js)     |
+| [TLY](https://tly31.com/)<sup>[[task](./task/tly_checkin.js)]</sup><sup>[[workflow](./.github/workflows/tly_checkin.yml)]</sup>                             | ❌        | `TLY_COOKIE ` 多账号 `&` 隔开                         |
+| [VIVO](https://bbs.vivo.com.cn/newbbs/)<sup>[[task](./task/vivo_checkin.js)]</sup><sup>[[workflow](./.github/workflows/vivo_checkin.yml)]</sup>             | ✅        | `VIVO_COOKIE ` 多账号 `&` 隔开                        |
 
 > **[Mattraks/delete-workflow-runs](https://github.com/Mattraks/delete-workflow-runs)@v2**
 > 
