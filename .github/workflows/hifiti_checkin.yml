@@ -56,8 +56,8 @@ jobs:
           WXPUSHER_TOKEN: ${{ secrets.WXPUSHER_TOKEN }}
           WXPUSHER_UID: ${{ secrets.WXPUSHER_UID }}
           
-          # pushplus
-          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          # # pushplus
+          # PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
           
           # HIFITI
           HIFITI_EMAIL_0: ${{ secrets.HIFITI_EMAIL_0 }}
