@@ -73,7 +73,7 @@ async function run(email, password) {
         const cookies = await page.cookies();
         const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
 
-        // console.log(cookieString);
+        console.log(cookieString);
 
         return cookieString
     } catch (error) {
