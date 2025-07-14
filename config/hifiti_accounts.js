@@ -1,16 +1,16 @@
 module.exports = [
 {
-    email: process.env.HIFIN_EMAIL_0
+    email: process.env.HIFITI_EMAIL_0 
     ,
-    password: process.env.HIFIN_PASSWORD_0
+    password: process.env.HIFITI_PASSWORD_0
     ,
-    cookie: process.env.HIFIN_COOKIE_0
+    cookie: process.env.HIFITI_COOKIE_0
 }, 
 {
-    email: process.env.HIFIN_EMAIL_1
+    email: process.env.HIFITI_EMAIL_1
     ,
-    password: process.env.HIFIN_PASSWORD_1
+    password: process.env.HIFITI_PASSWORD_1
     ,
-    cookie: process.env.HIFIN_COOKIE_1
+    cookie: process.env.HIFITI_COOKIE_1
 },
 ]
