@@ -151,7 +151,7 @@ async function updateCookie(userCookie, index) {
             // repo: REPO, 
             environment_name: environment_name,
             secret_name: secret_name,
-            encrypted_value: userCookie
+            secret_value: userCookie
         })
         logger.info(`更新 ${environment_name} ${secret_name} res=${res}`)
     } catch (error) {
