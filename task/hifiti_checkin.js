@@ -28,8 +28,8 @@ async function run(email, password) {
     const browser = await puppeteer.launch({
         // headless: false,    //这里我设置成false主要是为了让大家看到效果，设置为true就不会打开浏览器
         // headless: true,    //这里我设置成false主要是为了让大家看到效果，设置为true就不会打开浏览器
-        // headless: "shell
-        executablePath: '/usr/bin/chromium-browser',
+        // headless: "shell",
+        // executablePath: '/usr/bin/chromium-browser',
         headless: false,
         args: ["--no-sandbox",'--disable-extensions'],
         defaultViewport: null,
