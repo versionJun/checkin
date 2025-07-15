@@ -450,7 +450,7 @@ async function doTask(session){
     await wxDrawTask(session)
 
     // 每日任务-手动上传一个文件
-    await uploadFileDailyTask(session)
+    // await uploadFileDailyTask(session)    //{"success":false,"code":"101002009","message":"无接口权限,服务器拒绝执行","data":null}
 
     // 领取云朵
     await receiveTask(session)
