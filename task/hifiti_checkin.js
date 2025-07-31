@@ -134,7 +134,7 @@ function goMy(cookie) {
         if (!$('.nav-item.username').text().trim()) return Promise.reject('cookie已过期或无效')
 
         // const species = $('span.text-muted:contains("金币") > em').text().trim()
-        const species = $('span.text-muted:contains("金币")').next('b').text().trim()
+        const species = $('span.text-muted:contains("金币")').next('em').text().trim()
 
         return { species }
     })
