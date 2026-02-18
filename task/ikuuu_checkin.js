@@ -103,7 +103,8 @@ function goUser(cookie) {
     })
     .then(d => {
 
-        const $ = cheerio.load(d.data)
+        const decodeHtmlStr = getDecodeHtmlStr(d.data)
+        const $ = cheerio.load(decodeHtmlStr)
         const unUsedTraffic = $('.card-wrap:contains("剩余流量") > .card-body').text().trim()
 
         return { unUsedTraffic }
@@ -112,6 +113,43 @@ function goUser(cookie) {
         console.error(error)
         return Promise.reject(`goUser->${error}`)
     })
+}
+
+function getDecodeHtmlStr(encodeHtmlStr){
+    // polyfill for native atob, support utf-8
+    function SlowerDecodeBase64(str) {
+        // Going backwards: from bytestream, to percent-encoding, to original string.
+        return decodeURIComponent(atob(str).split("").map(function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(""));
+    }
+    // modern browsers use TextDecoder faster
+    function FasterDecodeBase64(base64) {
+        const text = atob(base64);
+        const length = text.length;
+        const bytes = new Uint8Array(length);
+        let i = 0;
+        for (i = 0; i < length; i++) {
+            bytes[i] = text.charCodeAt(i);
+        }
+        const decoder = new TextDecoder(); // default is utf-8
+        return decoder.decode(bytes);
+    }
+
+    function decodeBase64(str) {
+        try {
+            return FasterDecodeBase64(str);
+        } catch (e) {
+            return SlowerDecodeBase64(str);
+        }
+    }
+
+    const reg = /(?<=var originBody = ").*?(?=";)/g
+    const originBody = encodeHtmlStr.match(reg)
+
+    // console.log(originBody)
+
+    return decodeBase64(originBody[0])
 }
 
 !(async () => {
@@ -142,3 +180,4 @@ function goUser(cookie) {
     });
 
 })()
+
