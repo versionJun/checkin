@@ -5,26 +5,29 @@ const message = require('../utils/message.js')
 const { dayjs } = require('../utils/dayjs.js')
 const { logger, getLog4jsStr } = require('../utils/log4js.js')
 
-const BASE_URL = 'https://glados.rocks'
+const protocol = 'https'
+const domain = 'glados.cloud'
+const BASE_URL = `${protocol}://${domain}`
 const CHECKIN_URL = `${BASE_URL}/api/user/checkin`
 const STATUS_URL = `${BASE_URL}/api/user/status`
-const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
 
 const encryptEmail = (email) => { return email.replace(/^(\S{3})(?:\S*)(\S{2}@\S+)$/, '$1***$2') }
 
 axios.defaults.timeout = 5 * 1000
+axios.defaults.retry = 5
 
 function goCheckin(cookie){
     return axios(CHECKIN_URL, {
         method: 'POST',
         data: { 
-            'token': 'glados.one' 
+            'token': `${domain}`
         },
         headers: {
             'Cookie': cookie,
             'User-Agent': UA,
             'Content-Type': 'application/json;charset=UTF-8'
-        },
+        }
     })
     .then(res => {
         // logger.debug(`${JSON.stringify(res.data)}`)
@@ -38,7 +41,7 @@ function goCheckin(cookie){
         return res.data
     })
     .catch(error => {
-        console.error(error)
+        // console.error(error)
         return Promise.reject(`goCheckin->${error}`)
     })
 }
@@ -64,6 +67,7 @@ function goStatus(cookie){
         return Promise.reject(`goStatus->${error}`)
     })
 }
+
 
 !(async () => {
 
@@ -92,8 +96,6 @@ function goStatus(cookie){
             logger.removeContext("user")
         }
     }
-
-    // console.log(`getLog4jsStr('INFO')\n${getLog4jsStr('INFO')}`)
 
     await message.send_message({ 
         title: `${path.parse(__filename).name}_${dayjs.tz().format('YYYY-MM-DD HH:mm:ss')}`,
