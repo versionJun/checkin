@@ -1,22 +1,29 @@
 module.exports = [{
     email: process.env.IKUUU_EMAIL_0,
     passwd: process.env.IKUUU_PASSWD_0,
+    cookie: process.env.IKUUU_COOKIE_0
 }, {
     email: process.env.IKUUU_EMAIL_1,
     passwd: process.env.IKUUU_PASSWD_1,
+    cookie: process.env.IKUUU_COOKIE_1
 }, {
     email: process.env.IKUUU_EMAIL_2,
     passwd: process.env.IKUUU_PASSWD_2,
+    cookie: process.env.IKUUU_COOKIE_2
 }, {
     email: process.env.IKUUU_EMAIL_3,
     passwd: process.env.IKUUU_PASSWD_3,
+    cookie: process.env.IKUUU_COOKIE_3
 }, {
     email: process.env.IKUUU_EMAIL_4,
     passwd: process.env.IKUUU_PASSWD_4,
+    cookie: process.env.IKUUU_COOKIE_4
 }, {
     email: process.env.IKUUU_EMAIL_5,
     passwd: process.env.IKUUU_PASSWD_5,
+    cookie: process.env.IKUUU_COOKIE_5
 }, {
     email: process.env.IKUUU_EMAIL_6,
     passwd: process.env.IKUUU_PASSWD_6,
+    cookie: process.env.IKUUU_COOKIE_6
 }]
