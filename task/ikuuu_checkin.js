@@ -157,7 +157,8 @@ function getDecodeHtmlStr(encodeHtmlStr){
     for (let index = 0; index < accounts.length; index++) {
         const user = accounts[index]
         // if(!user.email || !user.passwd) continue
-        if(!((user.email && user.passwd) || user.cookie)) continue
+        // if(!((user.email && user.passwd) || user.cookie)) continue
+        if(!user.cookie) continue
         try {
             logger.addContext("user", `账号${index}`)
             // const userCookie = await goLogin(user)
