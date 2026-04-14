@@ -156,11 +156,12 @@ function getDecodeHtmlStr(encodeHtmlStr){
 
     for (let index = 0; index < accounts.length; index++) {
         const user = accounts[index]
-        if(!user.email || !user.passwd)
-            continue
+        // if(!user.email || !user.passwd) continue
+        if(!((user.email && user.passwd) || user.cookie)) continue
         try {
             logger.addContext("user", `账号${index}`)
-            const userCookie = await goLogin(user)
+            // const userCookie = await goLogin(user)
+            const userCookie = user.cookie
             const cookieMap = getCookieMap(userCookie)
             logger.addContext("user", `账号${index}(${encryptEmail(cookieMap.get("email"))})`)
             const checkin_result = await goCheckin(userCookie)
