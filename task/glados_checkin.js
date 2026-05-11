@@ -6,11 +6,11 @@ const { dayjs } = require('../utils/dayjs.js')
 const { logger, getLog4jsStr } = require('../utils/log4js.js')
 
 const protocol = 'https'
-const domain = 'glados.cloud'
+const domain = 'railgun.info'
 const BASE_URL = `${protocol}://${domain}`
 const CHECKIN_URL = `${BASE_URL}/api/user/checkin`
 const STATUS_URL = `${BASE_URL}/api/user/status`
-const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
 
 const encryptEmail = (email) => { return email.replace(/^(\S{3})(?:\S*)(\S{2}@\S+)$/, '$1***$2') }
 
